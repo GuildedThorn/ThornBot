@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ThornBot.Handlers;
 using ThornBot.Services;
 using DotNetEnv;
+using Victoria;
 
 namespace ThornBot;
 
@@ -14,7 +15,9 @@ public class ThornBot : IAsyncDisposable
     private readonly IServiceProvider _services;
     private readonly DiscordSocketClient _client;
     private readonly IConfiguration _config;
+    private readonly EventsHandler _eventsHandler;
     private readonly CommandHandler _commandHandler;
+    private readonly LavaNode<LavaPlayer<LavaTrack>, LavaTrack> _lavaNode;
     public static DateTime StartTime;
 
     public ThornBot()
@@ -35,11 +38,12 @@ public class ThornBot : IAsyncDisposable
         _services = ConfigureServices(config);
         _config = _services.GetRequiredService<IConfiguration>();
         _client = _services.GetRequiredService<DiscordSocketClient>();
+        _eventsHandler = _services.GetRequiredService<EventsHandler>();
         _commandHandler = _services.GetRequiredService<CommandHandler>();
+        _lavaNode = _services.GetRequiredService<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>>();
 
         // Initialize logging
         _services.GetRequiredService<LoggingService>();
-
     }
 
     public async Task StartAsync()
@@ -52,6 +56,12 @@ public class ThornBot : IAsyncDisposable
 
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
+
+        _client.Ready += _eventsHandler.OnReadyAsync;
+
+        var icecast = _services.GetRequiredService<IcecastService>();
+        _ = icecast.StartMonitoringAsync();
+        Console.WriteLine("✅ Icecast 2 service started successfully!");
 
         StartTime = DateTime.Now;
         Console.WriteLine("✅ Bot started successfully!");
@@ -76,8 +86,25 @@ public class ThornBot : IAsyncDisposable
             }))
             .AddLogging()
             .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
+            .AddLavaNode<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>, LavaPlayer<LavaTrack>, LavaTrack>(x =>
+            {
+                x.Hostname = config["lavalink:hostname"] ?? "localhost";
+                x.Port = config["lavalink:port"] is not null ? ushort.Parse(config["lavalink:port"]!) : 2333;
+                x.Authorization = config["lavalink:authorization"] ?? "youshallnotpass";
+                x.SelfDeaf = config["lavalink:selfdeaf"] is not null && bool.Parse(config["lavalink:selfdeaf"]!);
+            })
+            .AddSingleton<EventsHandler>()
             .AddSingleton<CommandHandler>()
             .AddSingleton<LoggingService>()
+            .AddSingleton<AudioService>()
+            .AddSingleton<IcecastService>(sp => new IcecastService(
+                sp.GetRequiredService<DiscordSocketClient>(),
+                config["icecast:url"] ?? throw new InvalidOperationException("Icecast URL not configured."),
+                ulong.Parse(config["icecast:notifyChannelId"] ?? throw new InvalidOperationException("Icecast notifyChannelId not configured.")),
+                ulong.Parse(config["icecast:radioChannelId"] ?? throw new InvalidOperationException("Icecast voiceChannelId not configured.")),
+                ulong.Parse(config["icecast:radioGuildId"] ?? throw new InvalidOperationException("Icecast guildId not configured.")),
+                sp
+            ))
             .BuildServiceProvider();
 
     public async ValueTask DisposeAsync()
