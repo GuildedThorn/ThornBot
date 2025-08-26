@@ -1,0 +1,18 @@
+{
+  "Version": "1.0",
+  "discord": {
+    "developmentGuildId": "123456789012345678"
+  },
+  "icecast": {
+    "url": "localhost",
+    "notifyChannelId": "123456789012345678",
+    "radioGuildId": "123456789012345678",
+    "radioChannelId": "123456789012345678"
+  },
+  "lavalink": {
+    "host": "localhost",
+    "port": 2333,
+    "authorization": "",
+    "selfdeaf": true
+  }
+}
