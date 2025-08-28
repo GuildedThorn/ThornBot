@@ -7,7 +7,9 @@
     "url": "localhost",
     "notifyChannelId": "123456789012345678",
     "radioGuildId": "123456789012345678",
-    "radioChannelId": "123456789012345678"
+    "radioChannelId": "123456789012345678",
+    "songRequestGuildId": "123456789012345678",
+    "songRequestChannelId": "123456789012345678"
   },
   "lavalink": {
     "host": "localhost",
