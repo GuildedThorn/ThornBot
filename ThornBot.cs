@@ -70,6 +70,10 @@ public class ThornBot : IAsyncDisposable
 
         StartTime = DateTime.Now;
         Console.WriteLine("✅ Bot started successfully!");
+        
+        var uptimeService = _services.GetRequiredService<UptimeService>();
+        _ = uptimeService.StartMonitoringAsync();
+        Console.WriteLine("✅ Uptime monitoring service started successfully!");
 
         await Task.Delay(Timeout.Infinite);
     }
@@ -102,6 +106,8 @@ public class ThornBot : IAsyncDisposable
             .AddSingleton<CommandHandler>()
             .AddSingleton<LoggingService>()
             .AddSingleton<AudioService>()
+            .AddSingleton<UptimeService>(sp => new UptimeService(
+                config["discord:uptimeKumaPushUrl"] ?? throw new InvalidOperationException("Uptime pushUrl not configured.")))
             .AddSingleton<LavaLinkService>()
             .AddSingleton<IcecastService>(sp => new IcecastService(
                 sp.GetRequiredService<DiscordSocketClient>(),
