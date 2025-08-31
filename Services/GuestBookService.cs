@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using ThornBot.Handlers;
 using IChannel = RabbitMQ.Client.IChannel;
 
 namespace ThornBot.Services;
@@ -53,7 +54,6 @@ public class GuestBookService
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine("[x] Raw message: " + message);
 
                 var entry = JsonSerializer.Deserialize<GuestbookEntry>(message);
                 if (entry == null) return;
@@ -69,9 +69,15 @@ public class GuestBookService
                 }
 
                 var channel = guild.GetChannel(channelId);
-                if (channel is IMessageChannel messageChannel)
-                {
-                    await messageChannel.SendMessageAsync($"**{entry.Name}**: {entry.Message}");
+                if (channel is IMessageChannel messageChannel) {
+                    await messageChannel.SendMessageAsync(embed: await EmbedHandler.CreateBasicEmbedWithFields(
+                        "ThornBot",
+                        "A new guestbook entry has been added.",
+                        [
+                            new EmbedFieldBuilder().WithName("Name").WithValue(entry.Name).WithIsInline(true),
+                            new EmbedFieldBuilder().WithName("Message").WithValue(entry.Message).WithIsInline(false),
+                            new EmbedFieldBuilder().WithName("Date").WithValue(entry.Date.ToString("yyyy-MM-dd HH:mm:ss")).WithIsInline(true)
+                        ]));
                 }
                 else
                 {
