@@ -63,17 +63,8 @@ public class ThornBot : IAsyncDisposable
         await _client.StartAsync();
 
         _client.Ready += _eventsHandler.OnReadyAsync;
-        
-        var icecast = _services.GetRequiredService<IcecastService>();
-        _ = icecast.StartMonitoringAsync();
-        Console.WriteLine("✅ Icecast 2 service started successfully!");
 
         StartTime = DateTime.Now;
-        Console.WriteLine("✅ Bot started successfully!");
-        
-        var uptimeService = _services.GetRequiredService<UptimeService>();
-        _ = uptimeService.StartMonitoringAsync();
-        Console.WriteLine("✅ Uptime monitoring service started successfully!");
 
         await Task.Delay(Timeout.Infinite);
     }
@@ -109,6 +100,7 @@ public class ThornBot : IAsyncDisposable
             .AddSingleton<UptimeService>(sp => new UptimeService(
                 config["discord:uptimeKumaPushUrl"] ?? throw new InvalidOperationException("Uptime pushUrl not configured.")))
             .AddSingleton<LavaLinkService>()
+            .AddSingleton<GuestBookService>()
             .AddSingleton<IcecastService>(sp => new IcecastService(
                 sp.GetRequiredService<DiscordSocketClient>(),
                 config["icecast:url"] ?? throw new InvalidOperationException("Icecast URL not configured."),

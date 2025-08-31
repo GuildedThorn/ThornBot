@@ -3,6 +3,8 @@
   "discord": {
     "developmentGuildId": "123456789012345678",
     "uptimeKumaPushUrl": "https://example.com/your-uptime-kuma-push-url",
+    "GuestBookGuildId": "123456789012345678",
+    "GuestBookChannelId": "1234567890123456789"
   },
   "icecast": {
     "url": "localhost",
