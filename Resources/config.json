@@ -11,8 +11,6 @@
   },
   "truenas": {
     "host": "localhost",
-    "username": "root",
-    "password": "yourpassword",
     "privateKeyPath": "/path/to/private/key",
     "LogGuildId": "123456789012345678",
     "LogChannelId": "123456789012345678"
