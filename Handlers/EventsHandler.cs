@@ -19,6 +19,10 @@ public class EventsHandler(IServiceProvider serviceProvider) {
         _ = guestBookService.StartAsync();
         Log.Information("✅ GuestBookService started successfully!");
         
+        var trueNasService = serviceProvider.GetRequiredService<TrueNasService>();
+        trueNasService.StartMonitoring();
+        Log.Information("✅ TrueNAS monitoring service started successfully!");
+        
         var uptimeService = serviceProvider.GetRequiredService<UptimeService>();
         _ = uptimeService.StartMonitoringAsync();
         Log.Information("✅ Uptime monitoring service started successfully!");

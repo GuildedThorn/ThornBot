@@ -138,6 +138,7 @@ public class ThornBot : IAsyncDisposable {
                 config["discord:uptimeKumaPushUrl"] ?? throw new InvalidOperationException("Uptime pushUrl not configured.")))
             .AddSingleton<LavaLinkService>()
             .AddSingleton<GuestBookService>()
+            .AddSingleton<TrueNasService>()
             .AddSingleton<IcecastService>(sp => new IcecastService(
                 sp.GetRequiredService<DiscordSocketClient>(),
                 config["icecast:url"] ?? throw new InvalidOperationException("Icecast URL not configured."),
