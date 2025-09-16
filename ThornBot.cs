@@ -6,12 +6,17 @@ using Microsoft.Extensions.DependencyInjection;
 using ThornBot.Handlers;
 using ThornBot.Services;
 using DotNetEnv;
+using DotNetEnv.Configuration;
+using Microsoft.Extensions.Logging;
+using Prometheus;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 using Victoria;
 
 namespace ThornBot;
 
-public class ThornBot : IAsyncDisposable
-{
+public class ThornBot : IAsyncDisposable {
+    
     private readonly IServiceProvider _services;
     private readonly DiscordSocketClient _client;
     private readonly IConfiguration _config;
@@ -21,8 +26,8 @@ public class ThornBot : IAsyncDisposable
     private readonly LavaNode<LavaPlayer<LavaTrack>, LavaTrack> _lavaNode;
     public static DateTime StartTime;
 
-    public ThornBot()
-    {
+    public ThornBot() {
+        
         // Load environment variables
         Env.Load();
 
@@ -30,10 +35,27 @@ public class ThornBot : IAsyncDisposable
         var configPath = Path.Combine(AppContext.BaseDirectory, "Resources");
         Directory.CreateDirectory(configPath);
 
+        
         var config = new ConfigurationBuilder()
+            .AddDotNetEnv()
             .SetBasePath(configPath)
             .AddJsonFile("config.json", optional: false, reloadOnChange: true)
             .Build();
+        
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .Enrich.FromLogContext()
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+            )
+            .WriteTo.GrafanaLoki(
+                uri: config["loki:uri"] ?? throw new InvalidOperationException("Loki URI not configured."),
+                labels: [
+                    new LokiLabel { Key = "app", Value = "thornbot" },
+                    new LokiLabel { Key = "env", Value = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "dev" },
+                    new LokiLabel { Key = "machine", Value = Environment.MachineName }
+                ])
+            .CreateLogger();
 
         // Configure DI
         _services = ConfigureServices(config);
@@ -48,14 +70,19 @@ public class ThornBot : IAsyncDisposable
         _services.GetRequiredService<LoggingService>();
     }
 
-    public async Task StartAsync()
-    {
-        var token = Environment.GetEnvironmentVariable("TOKEN") ?? _config["token"];
+    public async Task StartAsync() {
+        
+        const int port = 5000;
+        new KestrelMetricServer(port: port).Start();
+        Log.Information("Prometheus metrics server started on port: {Port} ", port);
+        
+        var token = _config["token"];
         if (string.IsNullOrWhiteSpace(token))
             throw new InvalidOperationException("❌ Bot token not found in .env or config.json!");
         
         _lavaLink.StartLavalink("Lavalink.jar");
-        await LavaLinkService.WaitForLavalinkAsync(_config["lavalink:hostname"] ?? "localhost", _config["lavalink:port"] is not null ? int.Parse(_config["lavalink:port"]!) : 2333);
+        await LavaLinkService.WaitForLavalinkAsync(_config["lavalink:hostname"] ?? "localhost", 
+            _config["lavalink:port"] is not null ? int.Parse(_config["lavalink:port"]!) : 2333);
         
         await _commandHandler.InitializeAsync();
 
@@ -63,6 +90,12 @@ public class ThornBot : IAsyncDisposable
         await _client.StartAsync();
 
         _client.Ready += _eventsHandler.OnReadyAsync;
+        
+        _client.Log += msg =>
+        {
+            Log.Information("[Discord] {Source}: {Message}", msg.Source, msg.Message);
+            return Task.CompletedTask;
+        };
 
         StartTime = DateTime.Now;
 
@@ -84,7 +117,11 @@ public class ThornBot : IAsyncDisposable
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 1000
             }))
-            .AddLogging()
+            .AddLogging(builder =>
+            {
+                builder.ClearProviders(); // remove default
+                builder.AddSerilog(dispose: true);
+            })
             .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
             .AddLavaNode<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>, LavaPlayer<LavaTrack>, LavaTrack>(x =>
             {

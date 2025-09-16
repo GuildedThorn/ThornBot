@@ -2,7 +2,7 @@ using Discord;
 
 namespace ThornBot.Handlers; 
 
-public class EmbedHandler {
+public static class EmbedHandler {
 
     public static async Task<Embed> CreateBasicEmbed(string title, string description) {
         var embed = await Task.Run(() => new EmbedBuilder()

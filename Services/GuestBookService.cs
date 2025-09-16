@@ -1,3 +1,5 @@
+using ThornBot.Handlers;
+
 using System.Text;
 using System.Text.Json;
 using Discord;
@@ -5,15 +7,12 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using ThornBot.Handlers;
 using IChannel = RabbitMQ.Client.IChannel;
+using Serilog;
 
 namespace ThornBot.Services;
 
-public class GuestBookService
-{
-    
-    private readonly RabbitMQ.Client.IConnection _connection;
+public class GuestBookService {
     private readonly IChannel _channel;
     private readonly IConfiguration _configuration ;
     private readonly DiscordSocketClient _client;
@@ -32,8 +31,8 @@ public class GuestBookService
             VirtualHost = Environment.GetEnvironmentVariable("RabbitMQ__VirtualHost") ?? "/"
         };
 
-        _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-        _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+        var connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
+        _channel = connection.CreateChannelAsync().GetAwaiter().GetResult();
 
         // Ensure the queue exists
         _channel.QueueDeclareAsync(
@@ -97,7 +96,7 @@ public class GuestBookService
             consumer: consumer
         );
 
-        Console.WriteLine("✅ GuestBookService RabbitMQ consumer started.");
+        Log.Information("✅ GuestBookService RabbitMQ consumer started.");
     }
 }
 

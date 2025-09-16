@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Sockets;
+using Serilog;
 
 namespace ThornBot.Services;
 
@@ -32,7 +33,7 @@ public class LavaLinkService : IAsyncDisposable {
     {
         if (LavalinkAlreadyRunning())
         {
-            Console.WriteLine("ℹ️ Lavalink already running, skipping spawn.");
+            Log.Debug("ℹ️ Lavalink already running, skipping spawn.");
             return;
         }
 
@@ -70,7 +71,7 @@ public class LavaLinkService : IAsyncDisposable {
         };
         _lavalinkProcess.BeginErrorReadLine();
 
-        Console.WriteLine("✅ Lavalink started by bot.");
+        Log.Information("✅ Lavalink started by bot.");
     }
     
     public static async Task WaitForLavalinkAsync(string host, int port, int timeoutSeconds = 30)
@@ -85,7 +86,7 @@ public class LavaLinkService : IAsyncDisposable {
                 await client.ConnectAsync(host, port);
                 if (client.Connected)
                 {
-                    Console.WriteLine("✅ Lavalink is up!");
+                    Log.Information("✅ Lavalink is up!");
                     return;
                 }
             }
