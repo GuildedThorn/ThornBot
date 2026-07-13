@@ -2,6 +2,7 @@ using System.Text.Json;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using ThornBot.Handlers;
 using Victoria;
 using Victoria.Rest.Search;
 
@@ -28,6 +29,7 @@ public class RadioService(
     // is broadcasting in this same guild.
     public bool IsLive { get; private set; }
     public ulong GuildId { get; } = guildId;
+    public string Name { get; private set; } = "";
     public string Title { get; private set; } = "";
     public string Artist { get; private set; } = "";
 
@@ -42,14 +44,18 @@ public class RadioService(
                 var root = doc.RootElement;
 
                 var isOnline = root.TryGetProperty("online", out var onlineProp) && onlineProp.GetBoolean();
+                var name = root.TryGetProperty("name", out var nameProp) ? nameProp.GetString() ?? "" : "";
                 var title = root.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? "" : "";
                 var artist = root.TryGetProperty("artist", out var artistProp) ? artistProp.GetString() ?? "" : "";
+
+                Name = name;
 
                 // Went online
                 if (isOnline && !_wasOnline)
                 {
-                    await SendMessageAsync("🎵 Radio is online!");
+                    await SendMessageAsync($"🎵 {(string.IsNullOrWhiteSpace(name) ? "Radio" : name)} is online!");
                     await JoinAndPlayStreamAsync();
+                    await PresenceHandler.SetListeningAsync(client, string.IsNullOrWhiteSpace(name) ? "the radio" : name);
                 }
 
                 switch (isOnline)
@@ -63,6 +69,7 @@ public class RadioService(
                     case false when _wasOnline:
                         await SendMessageAsync("❌ Radio went offline!");
                         await LeaveStreamAsync();
+                        await PresenceHandler.SetDefaultAsync(client);
                         break;
                 }
 
@@ -79,6 +86,7 @@ public class RadioService(
                 {
                     await SendMessageAsync("❌ Radio went offline!");
                     await LeaveStreamAsync();
+                    await PresenceHandler.SetDefaultAsync(client);
                     _wasOnline = false;
                     IsLive = false;
                 }

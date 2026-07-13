@@ -1,3 +1,4 @@
+using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using ThornBot.Services;
 using Victoria;
@@ -9,6 +10,8 @@ public class EventsHandler(IServiceProvider serviceProvider) {
     public async Task OnReadyAsync() {
         await serviceProvider.UseLavaNodeAsync();
         Console.WriteLine("✅ Lava Link Connected!");
+
+        await PresenceHandler.SetDefaultAsync(serviceProvider.GetRequiredService<DiscordSocketClient>());
 
         // Isolated so one dependency being unreachable (e.g. RabbitMQ down)
         // can't abort this method and silently skip the services after it.

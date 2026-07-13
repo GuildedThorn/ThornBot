@@ -9,10 +9,12 @@ public class RadioModule(RadioService radioService) : InteractionModuleBase<Sock
     [SlashCommand("radio", "Shows whether the radio is live and what's playing.")]
     public async Task StatusAsync()
     {
+        var name = string.IsNullOrWhiteSpace(radioService.Name) ? "Radio" : radioService.Name;
+
         if (!radioService.IsLive)
         {
             await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed(
-                "📻 Radio", "Offline right now."), ephemeral: true);
+                $"📻 {name}", "Offline right now."), ephemeral: true);
             return;
         }
 
@@ -21,7 +23,7 @@ public class RadioModule(RadioService radioService) : InteractionModuleBase<Sock
             : $"{radioService.Artist} - {radioService.Title}";
 
         await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed(
-            "📻 Radio",
+            $"📻 {name}",
             string.IsNullOrWhiteSpace(nowPlaying)
                 ? "Live now!"
                 : $"Live now — **{nowPlaying}**"), ephemeral: true);

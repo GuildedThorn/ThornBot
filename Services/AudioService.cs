@@ -43,6 +43,7 @@ public sealed class AudioService
         _lavaNode.OnPlayerUpdate += OnPlayerUpdateAsync;
         _lavaNode.OnTrackEnd += OnTrackEndAsync;
         _lavaNode.OnTrackStart += OnTrackStartAsync;
+        _socketClient.UserVoiceStateUpdated += OnUserVoiceStateUpdatedAsync;
     }
 
     public void SetRequester(LavaTrack track, IUser user) => _requesters[track.Hash] = user;
@@ -77,6 +78,8 @@ public sealed class AudioService
 
         var embed = await EmbedHandler.CreateTrackEmbed("Now Playing", "🎶", arg.Track, GetRequester(arg.Track));
         var components = ComponentHandler.CreatePlayerControls(isPaused: false);
+
+        await PresenceHandler.SetListeningAsync(_socketClient, arg.Track.Title);
 
         // One message per guild, edited per track, instead of a fresh message
         // (and channel spam) every time the song changes.
@@ -133,6 +136,12 @@ public sealed class AudioService
 
     private async Task FinalizeNowPlayingAsync(ulong guildId, string title, string description)
     {
+        // Presence is global, not per-guild — don't clobber the radio's
+        // presence with the idle default if it's live (possibly in another
+        // guild entirely).
+        if (!_radioService.IsLive)
+            await PresenceHandler.SetDefaultAsync(_socketClient);
+
         if (!_nowPlayingMessages.TryRemove(guildId, out var message))
             return;
 
@@ -167,5 +176,86 @@ public sealed class AudioService
     {
         _logger.LogCritical("{}", JsonSerializer.Serialize(arg));
         return Task.CompletedTask;
+    }
+
+    private const int IdleDisconnectMinutes = 3;
+
+    // Leave voice after everyone else has left, instead of sitting connected
+    // (and, if something's still queued, playing to an empty room) forever.
+    private Task OnUserVoiceStateUpdatedAsync(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
+    {
+        var guild = oldState.VoiceChannel?.Guild ?? newState.VoiceChannel?.Guild;
+        if (guild is null)
+            return Task.CompletedTask;
+
+        // The radio's dedicated channel stays joined regardless of listeners —
+        // it's ambient, not something anyone actively started.
+        if (guild.Id == _radioService.GuildId && _radioService.IsLive)
+            return Task.CompletedTask;
+
+        var botChannel = guild.CurrentUser?.VoiceChannel;
+        if (botChannel is null)
+        {
+            CancelDisconnectTimer(guild.Id);
+            return Task.CompletedTask;
+        }
+
+        // Only reconsider when the change actually touches the bot's own channel.
+        if (oldState.VoiceChannel?.Id != botChannel.Id && newState.VoiceChannel?.Id != botChannel.Id)
+            return Task.CompletedTask;
+
+        if (botChannel.Users.Count(u => !u.IsBot) == 0)
+            ScheduleDisconnect(guild.Id, botChannel);
+        else
+            CancelDisconnectTimer(guild.Id);
+
+        return Task.CompletedTask;
+    }
+
+    private void CancelDisconnectTimer(ulong guildId)
+    {
+        if (_disconnectTokens.TryRemove(guildId, out var cts))
+            cts.Cancel();
+    }
+
+    private void ScheduleDisconnect(ulong guildId, SocketVoiceChannel channel)
+    {
+        CancelDisconnectTimer(guildId);
+        var cts = new CancellationTokenSource();
+        _disconnectTokens[guildId] = cts;
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(TimeSpan.FromMinutes(IdleDisconnectMinutes), cts.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                return; // someone rejoined before the timer elapsed
+            }
+
+            _disconnectTokens.TryRemove(guildId, out _);
+
+            if (channel.Users.Count(u => !u.IsBot) > 0)
+                return; // defensive re-check in case an update was missed
+
+            var player = await _lavaNode.TryGetPlayerAsync(guildId);
+            if (player?.Track is not null)
+            {
+                ClearRequester(player.Track);
+                await FinalizeNowPlayingAsync(guildId, "⏹️ Left", "Nobody was listening, so I left the channel.");
+                await player.StopAsync(_lavaNode, player.Track);
+            }
+
+            try
+            {
+                await _lavaNode.LeaveAsync(channel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Idle auto-disconnect failed to leave {ChannelName}", channel.Name);
+            }
+        }, cts.Token);
     }
 }
