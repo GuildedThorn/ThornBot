@@ -163,10 +163,15 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
     [SlashCommand("stop", "Stops the current song and clears the queue."), RequirePlayer, RequireRadioNotLive]
     public async Task StopAsync()
     {
+        // AnnounceStoppedAsync (a Discord message edit) and player.StopAsync (a
+        // LavaLink round trip) both happen before we can respond — either can push
+        // past the 3s interaction ack window, same reasoning as /play's DeferAsync.
+        await DeferAsync(ephemeral: true);
+
         var player = await _lavaNode.TryGetPlayerAsync(Context.Guild.Id);
         if (!player.State.IsConnected || player.Track == null)
         {
-            await RespondAsync(embed: await EmbedHandler.CreateErrorEmbed("I'm not playing anything."), ephemeral: true);
+            await FollowupAsync(embed: await EmbedHandler.CreateErrorEmbed("I'm not playing anything."), ephemeral: true);
             return;
         }
 
@@ -181,12 +186,12 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
             var displayName = Context.User is IGuildUser guildUser ? guildUser.DisplayName : Context.User.Username;
             await audioService.AnnounceStoppedAsync(Context.Guild.Id, displayName);
             await player.StopAsync(_lavaNode, player.Track);
-            await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed(
+            await FollowupAsync(embed: await EmbedHandler.CreateBasicEmbed(
                 "⏹️ Stopped", "Playback stopped and the queue was cleared.", EmbedColors.Success), ephemeral: true);
         }
         catch (Exception exception)
         {
-            await RespondAsync(embed: await EmbedHandler.CreateErrorEmbed(exception.Message), ephemeral: true);
+            await FollowupAsync(embed: await EmbedHandler.CreateErrorEmbed(exception.Message), ephemeral: true);
         }
     }
 
