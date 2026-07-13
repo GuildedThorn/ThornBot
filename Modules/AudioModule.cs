@@ -182,6 +182,8 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
         try
         {
             audioService.ClearRequester(player.Track);
+            var displayName = Context.User is IGuildUser guildUser ? guildUser.DisplayName : Context.User.Username;
+            await audioService.AnnounceStoppedAsync(Context.Guild.Id, displayName);
             await player.StopAsync(_lavaNode, player.Track);
             await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed(
                 "⏹️ Stopped", "Playback stopped and the queue was cleared.", EmbedColors.Success), ephemeral: true);
@@ -241,6 +243,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
             if (player.Track is not null)
             {
                 audioService.ClearRequester(player.Track);
+                await audioService.AnnounceQueueFinishedAsync(Context.Guild.Id);
                 await player.StopAsync(lavaNode, player.Track);
             }
             await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed(
