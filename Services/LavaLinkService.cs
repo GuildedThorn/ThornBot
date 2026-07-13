@@ -43,7 +43,12 @@ public class LavaLinkService : IAsyncDisposable {
         {
             FileName = javaPath,
             Arguments = $"-jar \"{jarPath}\"",
-            WorkingDirectory = workingDir ?? Path.GetDirectoryName(jarPath)!,
+            // Not Path.GetDirectoryName(jarPath): in the Nix-packaged deployment
+            // jarPath points into the (read-only, shared) Nix store, so Lavalink
+            // must look for application.yml in the process's own working
+            // directory instead — the caller controls that (repo root for
+            // `dotnet run`, the systemd unit's WorkingDirectory in production).
+            WorkingDirectory = workingDir ?? Directory.GetCurrentDirectory(),
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,

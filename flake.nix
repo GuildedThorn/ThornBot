@@ -116,6 +116,17 @@
                 Lavalink__JavaPath = "${cfg.javaPackage}/bin/java";
               };
 
+              # Lavalink reads application.yml from its own working directory
+              # (see Services/LavaLinkService.cs), which is this service's
+              # WorkingDirectory — bootstrap it once from the repo's template so
+              # Lavalink doesn't fall back to Spring Boot's bare default (port
+              # 8080, no password). Never overwritten, so operator edits stick.
+              preStart = ''
+                if [ ! -e "$STATE_DIRECTORY/application.yml" ]; then
+                  cp --no-preserve=mode,ownership ${cfg.package.src}/application.yml.example "$STATE_DIRECTORY/application.yml"
+                fi
+              '';
+
               serviceConfig = {
                 ExecStart = "${cfg.package}/bin/ThornBot";
                 WorkingDirectory = "/var/lib/thornbot";

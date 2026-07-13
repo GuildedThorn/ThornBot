@@ -55,3 +55,8 @@ nunit-*.xml
 
 # Credentials file
 *.env
+
+# Local Lavalink jar/config/logs (see application.yml.example)
+/Lavalink.jar
+/application.yml
+/lavalink.log

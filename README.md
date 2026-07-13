@@ -39,6 +39,11 @@ notifications piped over RabbitMQ.
 - A `Lavalink.jar` — not bundled; download one from
   [lavalink-devs/Lavalink releases](https://github.com/lavalink-devs/Lavalink/releases)
   and place it next to the built binary, or point `Lavalink:JarPath` at it
+- An `application.yml` in the bot's working directory (copy `application.yml.example`,
+  or let `dev/up.sh` do it) — without one, Lavalink falls back to Spring Boot's bare
+  default (port 8080, no password) instead of the port 2333 / `youshallnotpass`
+  password `config.json`'s `lavalink` section expects, and fails to start if anything
+  else already holds port 8080
 
 ## Getting started
 
