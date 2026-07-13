@@ -254,4 +254,53 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
             await RespondAsync(embed: await EmbedHandler.CreateErrorEmbed(exception.Message), ephemeral: true);
         }
     }
+
+    [SlashCommand("queue", "Shows what's currently playing and up next."), RequirePlayer]
+    public async Task QueueAsync()
+    {
+        var player = await lavaNode.TryGetPlayerAsync(Context.Guild.Id);
+        if (player?.Track is null)
+        {
+            await RespondAsync(embed: await EmbedHandler.CreateErrorEmbed("Nothing is playing right now."), ephemeral: true);
+            return;
+        }
+
+        var upcoming = player.GetQueue().ToArray();
+        var description = $"**Now Playing:** [{player.Track.Title}]({player.Track.Url})\n\n";
+
+        if (upcoming.Length == 0)
+        {
+            description += "Nothing queued up next.";
+        }
+        else
+        {
+            const int shown = 10;
+            var lines = upcoming.Take(shown).Select((track, i) =>
+                $"`{i + 1}.` [{track.Title}]({track.Url}) — {EmbedHandler.FormatDuration(track.Duration)}");
+            description += string.Join('\n', lines);
+
+            if (upcoming.Length > shown)
+                description += $"\n*...and {upcoming.Length - shown} more.*";
+        }
+
+        await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed("📜 Queue", description), ephemeral: true);
+    }
+
+    [SlashCommand("volume", "Sets the playback volume (0-150)."), RequirePlayer, RequireRadioNotLive]
+    public async Task VolumeAsync(
+        [Discord.Interactions.Summary("percent", "Volume percentage, 0-150"), MinValue(0), MaxValue(150)] int percent)
+    {
+        var player = await lavaNode.TryGetPlayerAsync(Context.Guild.Id);
+
+        try
+        {
+            await player.SetVolumeAsync(lavaNode, percent);
+            await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed(
+                "🔊 Volume", $"Set to **{percent}%**.", EmbedColors.Success), ephemeral: true);
+        }
+        catch (Exception exception)
+        {
+            await RespondAsync(embed: await EmbedHandler.CreateErrorEmbed(exception.Message), ephemeral: true);
+        }
+    }
 }
