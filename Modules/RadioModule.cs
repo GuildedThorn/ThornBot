@@ -59,13 +59,14 @@ public class RadioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
         var lines = archive.Items.Select(item =>
             $"**{item.StartedAt:yyyy-MM-dd HH:mm} UTC** — {EmbedHandler.FormatDuration(TimeSpan.FromSeconds(item.DurationSeconds))} — `{item.Id}`");
         var description = string.Join('\n', lines) +
-            $"\n\nPage {page}/{archive.TotalPages} — use `/radio play <id>` to replay one.";
+            $"\n\nPage {page}/{archive.TotalPages} — start typing in `/radio play` to search and pick one.";
 
         await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed("📼 Radio Archive", description), ephemeral: true);
     }
 
     [SlashCommand("play", "Plays a past radio broadcast."), RequireRadioNotLive]
-    public async Task PlayAsync([Summary("id", "Recording ID from /radio archive")] string id)
+    public async Task PlayAsync(
+        [Summary("id", "Start typing to search past broadcasts"), Autocomplete(typeof(RadioArchiveAutocompleteHandler))] string id)
     {
         await DeferAsync(ephemeral: true);
 
