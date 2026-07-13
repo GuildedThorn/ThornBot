@@ -29,6 +29,7 @@ public class RadioService(
     // is broadcasting in this same guild.
     public bool IsLive { get; private set; }
     public ulong GuildId { get; } = guildId;
+    public string BaseUrl { get; } = radioBaseUrl;
     public string Name { get; private set; } = "";
     public string Title { get; private set; } = "";
     public string Artist { get; private set; } = "";
@@ -99,6 +100,24 @@ public class RadioService(
     private static string FormatSong(string artist, string title) =>
         string.IsNullOrWhiteSpace(artist) ? title : $"{artist} - {title}";
 
+    public async Task<(IReadOnlyList<ArchiveEntry> Items, int TotalPages)> GetArchiveAsync(int page = 1, int pageSize = 10)
+    {
+        var response = await _http.GetStringAsync($"{radioBaseUrl}/api/radio/recordings?page={page}&pageSize={pageSize}");
+        using var doc = JsonDocument.Parse(response);
+        var root = doc.RootElement;
+
+        var totalPages = root.TryGetProperty("totalPages", out var totalPagesProp) ? totalPagesProp.GetInt32() : 1;
+        var items = root.GetProperty("items").EnumerateArray().Select(el => new ArchiveEntry(
+            el.GetProperty("id").GetString() ?? "",
+            el.TryGetProperty("stationName", out var stationNameProp) ? stationNameProp.GetString() ?? "" : "",
+            el.GetProperty("startedAt").GetDateTime(),
+            el.GetProperty("durationSeconds").GetInt64(),
+            el.GetProperty("sizeBytes").GetInt64()
+        )).ToList();
+
+        return (items, totalPages);
+    }
+
     private async Task JoinAndPlayStreamAsync()
     {
         var lavaNode = services.GetRequiredService<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>>();
@@ -168,3 +187,5 @@ public class RadioService(
             await channel.SendMessageAsync(message);
     }
 }
+
+public record ArchiveEntry(string Id, string StationName, DateTime StartedAt, long DurationSeconds, long SizeBytes);

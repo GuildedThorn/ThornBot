@@ -152,20 +152,11 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
         }
 
         var track = searchResponse.Tracks.First();
-        audioService.SetRequester(track, Context.User);
+        var startedNow = await audioService.PlayOrEnqueueAsync(player, lavaNode, track, Context.User);
 
-        // player.GetQueue() only reflects tracks waiting behind the current one —
-        // checking it alone would replace whatever's actively playing right now.
-        if (player.Track is null)
-        {
-            await player.PlayAsync(lavaNode, track);
-            await FollowupAsync(embed: await EmbedHandler.CreateTrackEmbed("Starting Playback", "▶️", track, Context.User), ephemeral: true);
-        }
-        else
-        {
-            player.GetQueue().Enqueue(track);
-            await FollowupAsync(embed: await EmbedHandler.CreateTrackEmbed("Added to Queue", "➕", track, Context.User), ephemeral: true);
-        }
+        await FollowupAsync(embed: startedNow
+            ? await EmbedHandler.CreateTrackEmbed("Starting Playback", "▶️", track, Context.User)
+            : await EmbedHandler.CreateTrackEmbed("Added to Queue", "➕", track, Context.User), ephemeral: true);
     }
 
 

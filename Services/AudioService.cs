@@ -53,6 +53,25 @@ public sealed class AudioService
 
     public void ClearRequester(LavaTrack track) => _requesters.TryRemove(track.Hash, out _);
 
+    // player.GetQueue() only reflects tracks waiting behind the current one —
+    // checking it alone would replace whatever's actively playing right now
+    // instead of queueing behind it. Shared by /play and archive playback so
+    // that decision only lives in one place.
+    public async Task<bool> PlayOrEnqueueAsync(LavaPlayer<LavaTrack> player,
+        LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, LavaTrack track, IUser requestedBy)
+    {
+        SetRequester(track, requestedBy);
+
+        if (player.Track is null)
+        {
+            await player.PlayAsync(lavaNode, track);
+            return true;
+        }
+
+        player.GetQueue().Enqueue(track);
+        return false;
+    }
+
     // Called by /stop (the button already edits the message itself when it
     // handles the click). Safe to call before or after actually stopping the
     // player — idempotent with the Stopped-reason cleanup in OnTrackEndAsync.
