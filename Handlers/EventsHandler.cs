@@ -9,18 +9,31 @@ public class EventsHandler(IServiceProvider serviceProvider) {
     public async Task OnReadyAsync() {
         await serviceProvider.UseLavaNodeAsync();
         Console.WriteLine("✅ Lava Link Connected!");
-        
-        var radio = serviceProvider.GetRequiredService<RadioService>();
-        _ = radio.StartMonitoringAsync();
-        Console.WriteLine("✅ Radio service started successfully!");
-        
-        var guestBookService = serviceProvider.GetRequiredService<GuestBookService>();
-        _ = guestBookService.StartAsync();
-        Console.WriteLine("✅ GuestBookService started successfully!");
-        
-        var uptimeService = serviceProvider.GetRequiredService<UptimeService>();
-        _ = uptimeService.StartMonitoringAsync();
-        Console.WriteLine("✅ Uptime monitoring service started successfully!");
-        
+
+        // Isolated so one dependency being unreachable (e.g. RabbitMQ down)
+        // can't abort this method and silently skip the services after it.
+        StartService("Radio", () => {
+            var radio = serviceProvider.GetRequiredService<RadioService>();
+            _ = radio.StartMonitoringAsync();
+        });
+
+        StartService("GuestBookService", () => {
+            var guestBookService = serviceProvider.GetRequiredService<GuestBookService>();
+            _ = guestBookService.StartAsync();
+        });
+
+        StartService("Uptime monitoring", () => {
+            var uptimeService = serviceProvider.GetRequiredService<UptimeService>();
+            _ = uptimeService.StartMonitoringAsync();
+        });
+    }
+
+    private static void StartService(string name, Action start) {
+        try {
+            start();
+            Console.WriteLine($"✅ {name} service started successfully!");
+        } catch (Exception ex) {
+            Console.WriteLine($"❌ {name} service failed to start: {ex.Message}");
+        }
     }
 }
