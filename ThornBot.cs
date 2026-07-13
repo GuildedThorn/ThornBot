@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ThornBot.Handlers;
 using ThornBot.Services;
 using DotNetEnv;
@@ -49,17 +50,17 @@ public class ThornBot : IAsyncDisposable
         _services.GetRequiredService<LoggingService>();
     }
 
-    public async Task StartAsync()
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         var token = Environment.GetEnvironmentVariable("TOKEN") ?? _config["token"];
         if (string.IsNullOrWhiteSpace(token))
             throw new InvalidOperationException("❌ Bot token not found in .env or config.json!");
-        
+
         _lavaLink.StartLavalink(
             _config["lavalink:jarPath"] ?? "Lavalink.jar",
             javaPath: _config["lavalink:javaPath"] ?? "java");
         await LavaLinkService.WaitForLavalinkAsync(_config["lavalink:hostname"] ?? "localhost", _config["lavalink:port"] is not null ? int.Parse(_config["lavalink:port"]!) : 2333);
-        
+
         await _commandHandler.InitializeAsync();
 
         await _client.LoginAsync(TokenType.Bot, token);
@@ -69,7 +70,18 @@ public class ThornBot : IAsyncDisposable
 
         StartTime = DateTime.Now;
 
-        await Task.Delay(Timeout.Infinite);
+        try
+        {
+            // Blocks until the caller cancels (e.g. a SIGINT/SIGTERM handler in Program.cs).
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            Console.WriteLine("ℹ️ Shutdown requested, logging out of Discord...");
+        }
+
+        await _client.LogoutAsync();
+        await _client.StopAsync();
     }
 
     private static ServiceProvider ConfigureServices(IConfiguration config) =>
@@ -87,7 +99,7 @@ public class ThornBot : IAsyncDisposable
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 1000
             }))
-            .AddLogging()
+            .AddLogging(builder => builder.AddConsole())
             .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
             .AddLavaNode<LavaNode<LavaPlayer<LavaTrack>, LavaTrack>, LavaPlayer<LavaTrack>, LavaTrack>(x =>
             {
@@ -119,14 +131,27 @@ public class ThornBot : IAsyncDisposable
         if (_client is IAsyncDisposable asyncClient)
             await asyncClient.DisposeAsync();
 
-        switch (_services)
+        try
         {
-            case IAsyncDisposable asyncServices:
-                await asyncServices.DisposeAsync();
-                break;
-            case IDisposable disposableServices:
-                disposableServices.Dispose();
-                break;
+            switch (_services)
+            {
+                case IAsyncDisposable asyncServices:
+                    await asyncServices.DisposeAsync();
+                    break;
+                case IDisposable disposableServices:
+                    disposableServices.Dispose();
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            // A disposal failure here (e.g. a known Victoria LavaNode bug
+            // disposing a WebSocket that's already closed) shouldn't turn an
+            // otherwise-successful graceful shutdown into a crash — the DI
+            // container still attempts every disposable's cleanup regardless
+            // (LavaLinkService.DisposeAsync killing the Lavalink process runs
+            // either way), this just stops it from propagating.
+            Console.WriteLine($"⚠️ Error disposing services during shutdown: {ex.Message}");
         }
 
         GC.SuppressFinalize(this);
