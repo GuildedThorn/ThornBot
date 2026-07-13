@@ -22,15 +22,19 @@ public class EmbedHandler {
         return Task.FromResult(embed);
     }
 
-    public static Task<Embed> CreateBasicEmbedWithFields(string title, string description, EmbedFieldBuilder[] fields) {
-        var embed = new EmbedBuilder()
+    public static Task<Embed> CreateBasicEmbedWithFields(string title, string description, EmbedFieldBuilder[] fields,
+        string? thumbnailUrl = null) {
+        var builder = new EmbedBuilder()
             .WithTitle(title)
             .WithFields(fields)
             .WithDescription(description)
             .WithColor(EmbedColors.Brand)
-            .WithCurrentTimestamp()
-            .Build();
-        return Task.FromResult(embed);
+            .WithCurrentTimestamp();
+
+        if (!string.IsNullOrWhiteSpace(thumbnailUrl))
+            builder.WithThumbnailUrl(thumbnailUrl);
+
+        return Task.FromResult(builder.Build());
     }
 
     public static Task<Embed> CreateErrorEmbed(string error) {

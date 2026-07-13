@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Discord;
 using Discord.Interactions;
 using Microsoft.Extensions.Configuration;
@@ -10,20 +11,33 @@ public class UserModule(IConfiguration config) : InteractionModuleBase<SocketInt
     [SlashCommand("info", "Get statistics about the bot")]
     public async Task InfoAsync()
     {
-        var platform = Environment.OSVersion.Platform;
-        var version = Environment.OSVersion.Version;
         var uptime = DateTime.Now - ThornBot.StartTime;
+        var memoryMb = Process.GetCurrentProcess().WorkingSet64 / 1024.0 / 1024.0;
 
-        await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed("ThornBot",
-            "A personal utility bot made by https://guildedthorn.com\n\n" +
-            "**Bot Version:** " + config["Version"] + "\n" +
-            "**Bot Platform:** " + platform + "\n" +
-            "**Bot OS Version:** " + version + "\n" +
-            "**Total Guilds:** " + Context.Client.Guilds.Count + "\n" +
-            "**Total Users:** " + Context.Client.Guilds.Sum(g => g.MemberCount) + "\n" +
-            "**Total Channels:** " + Context.Client.Guilds.Sum(g => g.Channels.Count) + "\n" +
-            $"**Ping:** {Context.Client.Latency}" + "ms" + "\n" +
-            "**Bot Uptime:** " + uptime.ToString(@"dd\.hh\:mm\:ss")), ephemeral: true);
+        var fields = new[]
+        {
+            new EmbedFieldBuilder().WithName("Version").WithValue(config["Version"] ?? "unknown").WithIsInline(true),
+            new EmbedFieldBuilder().WithName(".NET").WithValue(Environment.Version.ToString()).WithIsInline(true),
+            new EmbedFieldBuilder().WithName("OS").WithValue($"{Environment.OSVersion.Platform} {Environment.OSVersion.Version}").WithIsInline(true),
+            new EmbedFieldBuilder().WithName("Uptime").WithValue(uptime.ToString(@"dd\.hh\:mm\:ss")).WithIsInline(true),
+            new EmbedFieldBuilder().WithName("Ping").WithValue($"{Context.Client.Latency}ms").WithIsInline(true),
+            new EmbedFieldBuilder().WithName("Memory").WithValue($"{memoryMb:F0} MB").WithIsInline(true),
+            new EmbedFieldBuilder().WithName("Guilds").WithValue(Context.Client.Guilds.Count.ToString()).WithIsInline(true),
+            new EmbedFieldBuilder().WithName("Users").WithValue(Context.Client.Guilds.Sum(g => g.MemberCount).ToString()).WithIsInline(true),
+            new EmbedFieldBuilder().WithName("Channels").WithValue(Context.Client.Guilds.Sum(g => g.Channels.Count).ToString()).WithIsInline(true),
+        };
+
+        var embed = await EmbedHandler.CreateBasicEmbedWithFields(
+            "🤖 ThornBot",
+            "A personal utility bot by [GuildedThorn](https://guildedthorn.com).",
+            fields,
+            Context.Client.CurrentUser.GetAvatarUrl() ?? Context.Client.CurrentUser.GetDefaultAvatarUrl());
+
+        var components = new ComponentBuilder()
+            .WithButton("View Source", style: ButtonStyle.Link, url: "https://github.com/GuildedThorn/ThornBot")
+            .Build();
+
+        await RespondAsync(embed: embed, components: components, ephemeral: true);
     }
 
     [SlashCommand("songrequest", "Request a song to be in the ThornRadio mix")]
