@@ -41,8 +41,8 @@ public class UserModule(IConfiguration config) : InteractionModuleBase<SocketInt
         }
 
         // Parse configured log guild and channel IDs
-        if (!ulong.TryParse(config["icecast:songRequestGuildId"], out var logGuildId) ||
-            !ulong.TryParse(config["icecast:songRequestChannelId"], out var logChannelId))
+        if (!ulong.TryParse(config["radio:songRequestGuildId"], out var logGuildId) ||
+            !ulong.TryParse(config["radio:songRequestChannelId"], out var logChannelId))
         {
             await RespondAsync(
                 embed: await EmbedHandler.CreateErrorEmbed("The song request log guild or channel is not configured properly."

@@ -7,17 +7,29 @@ using Victoria.Rest.Search;
 
 namespace ThornBot.Services;
 
-public class IcecastService(
+// Talks to GuildedThorn.com's self-hosted radio relay (RadioService/RadioController),
+// which replaced the old standalone Icecast2 server. GET {radioBaseUrl}/api/radio/status
+// mirrors what status-json.xsl used to give us; {radioBaseUrl}/api/radio/stream is the
+// live audio LavaLink plays directly, same as the old Icecast mount URL.
+public class RadioService(
     DiscordSocketClient client,
-    string icecastUrl,
+    string radioBaseUrl,
     ulong notifyChannelId,
     ulong voiceChannelId,
     ulong guildId,
     IServiceProvider services)
 {
-    private string _lastSong = "";
-    private bool _wasOnline = false;
+    private string _lastTitle = "";
+    private string _lastArtist = "";
+    private bool _wasOnline;
     private readonly HttpClient _http = new();
+
+    // Read by RequireRadioNotLiveAttribute to gate music commands while the radio
+    // is broadcasting in this same guild.
+    public bool IsLive { get; private set; }
+    public ulong GuildId { get; } = guildId;
+    public string Title { get; private set; } = "";
+    public string Artist { get; private set; } = "";
 
     public async Task StartMonitoringAsync()
     {
@@ -25,57 +37,59 @@ public class IcecastService(
         {
             try
             {
-                var response = await _http.GetStringAsync(icecastUrl + "/status-json.xsl");
+                var response = await _http.GetStringAsync($"{radioBaseUrl}/api/radio/status");
                 using var doc = JsonDocument.Parse(response);
+                var root = doc.RootElement;
 
-                var source = doc.RootElement
-                    .GetProperty("icestats")
-                    .GetProperty("source");
-
-                var currentSong = source.TryGetProperty("title", out var titleProp)
-                    ? titleProp.GetString()
-                    : null;
-
-                var normalizedSong = (currentSong ?? "").Trim();
-                var isOnline = !string.IsNullOrEmpty(normalizedSong);
+                var isOnline = root.TryGetProperty("online", out var onlineProp) && onlineProp.GetBoolean();
+                var title = root.TryGetProperty("title", out var titleProp) ? titleProp.GetString() ?? "" : "";
+                var artist = root.TryGetProperty("artist", out var artistProp) ? artistProp.GetString() ?? "" : "";
 
                 // Went online
                 if (isOnline && !_wasOnline)
                 {
-                    await SendMessageAsync($"🎵 Stream is online! Now playing: **{normalizedSong}**");
+                    await SendMessageAsync("🎵 Radio is online!");
                     await JoinAndPlayStreamAsync();
                 }
 
                 switch (isOnline)
                 {
-                    // Song changed
-                    case true when _lastSong != normalizedSong:
-                        await SendMessageAsync($"🎶 Now playing: **{normalizedSong}**");
+                    // Song/artist changed
+                    case true when title != _lastTitle || artist != _lastArtist:
+                        await SendMessageAsync($"🎶 Now playing: **{FormatSong(artist, title)}**");
                         break;
 
                     // Went offline
                     case false when _wasOnline:
-                        await SendMessageAsync("❌ Stream went offline!");
+                        await SendMessageAsync("❌ Radio went offline!");
                         await LeaveStreamAsync();
                         break;
                 }
 
-                _lastSong = normalizedSong;
+                _lastTitle = title;
+                _lastArtist = artist;
                 _wasOnline = isOnline;
+                IsLive = isOnline;
+                Title = title;
+                Artist = artist;
             }
             catch
             {
                 if (_wasOnline)
                 {
-                    await SendMessageAsync("❌ Stream went offline!");
+                    await SendMessageAsync("❌ Radio went offline!");
                     await LeaveStreamAsync();
                     _wasOnline = false;
+                    IsLive = false;
                 }
             }
 
             await Task.Delay(5000);
         }
     }
+
+    private static string FormatSong(string artist, string title) =>
+        string.IsNullOrWhiteSpace(artist) ? title : $"{artist} - {title}";
 
     private async Task JoinAndPlayStreamAsync()
     {
@@ -108,7 +122,7 @@ public class IcecastService(
             }
         }
 
-        var searchResponse = await lavaNode.LoadTrackAsync(icecastUrl);
+        var searchResponse = await lavaNode.LoadTrackAsync($"{radioBaseUrl}/api/radio/stream");
         if (searchResponse.Type is SearchType.Empty or SearchType.Error)
             return;
 

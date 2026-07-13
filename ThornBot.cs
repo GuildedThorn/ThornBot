@@ -33,6 +33,7 @@ public class ThornBot : IAsyncDisposable
         var config = new ConfigurationBuilder()
             .SetBasePath(configPath)
             .AddJsonFile("config.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables()
             .Build();
 
         // Configure DI
@@ -54,7 +55,9 @@ public class ThornBot : IAsyncDisposable
         if (string.IsNullOrWhiteSpace(token))
             throw new InvalidOperationException("❌ Bot token not found in .env or config.json!");
         
-        _lavaLink.StartLavalink("Lavalink.jar");
+        _lavaLink.StartLavalink(
+            _config["lavalink:jarPath"] ?? "Lavalink.jar",
+            javaPath: _config["lavalink:javaPath"] ?? "java");
         await LavaLinkService.WaitForLavalinkAsync(_config["lavalink:hostname"] ?? "localhost", _config["lavalink:port"] is not null ? int.Parse(_config["lavalink:port"]!) : 2333);
         
         await _commandHandler.InitializeAsync();
@@ -101,12 +104,12 @@ public class ThornBot : IAsyncDisposable
                 config["discord:uptimeKumaPushUrl"] ?? throw new InvalidOperationException("Uptime pushUrl not configured.")))
             .AddSingleton<LavaLinkService>()
             .AddSingleton<GuestBookService>()
-            .AddSingleton<IcecastService>(sp => new IcecastService(
+            .AddSingleton<RadioService>(sp => new RadioService(
                 sp.GetRequiredService<DiscordSocketClient>(),
-                config["icecast:url"] ?? throw new InvalidOperationException("Icecast URL not configured."),
-                ulong.Parse(config["icecast:notifyChannelId"] ?? throw new InvalidOperationException("Icecast notifyChannelId not configured.")),
-                ulong.Parse(config["icecast:radioChannelId"] ?? throw new InvalidOperationException("Icecast voiceChannelId not configured.")),
-                ulong.Parse(config["icecast:radioGuildId"] ?? throw new InvalidOperationException("Icecast guildId not configured.")),
+                config["radio:baseUrl"] ?? throw new InvalidOperationException("Radio baseUrl not configured."),
+                ulong.Parse(config["radio:notifyChannelId"] ?? throw new InvalidOperationException("Radio notifyChannelId not configured.")),
+                ulong.Parse(config["radio:radioChannelId"] ?? throw new InvalidOperationException("Radio voiceChannelId not configured.")),
+                ulong.Parse(config["radio:radioGuildId"] ?? throw new InvalidOperationException("Radio guildId not configured.")),
                 sp
             ))
             .BuildServiceProvider();

@@ -10,9 +10,9 @@ public class EventsHandler(IServiceProvider serviceProvider) {
         await serviceProvider.UseLavaNodeAsync();
         Console.WriteLine("✅ Lava Link Connected!");
         
-        var icecast = serviceProvider.GetRequiredService<IcecastService>();
-        _ = icecast.StartMonitoringAsync();
-        Console.WriteLine("✅ Icecast 2 service started successfully!");
+        var radio = serviceProvider.GetRequiredService<RadioService>();
+        _ = radio.StartMonitoringAsync();
+        Console.WriteLine("✅ Radio service started successfully!");
         
         var guestBookService = serviceProvider.GetRequiredService<GuestBookService>();
         _ = guestBookService.StartAsync();
