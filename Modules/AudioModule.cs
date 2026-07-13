@@ -172,6 +172,11 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
 
         try
         {
+            var queue = player.GetQueue();
+            foreach (var queuedTrack in queue)
+                audioService.ClearRequester(queuedTrack);
+            queue.Clear();
+
             audioService.ClearRequester(player.Track);
             var displayName = Context.User is IGuildUser guildUser ? guildUser.DisplayName : Context.User.Username;
             await audioService.AnnounceStoppedAsync(Context.Guild.Id, displayName);
