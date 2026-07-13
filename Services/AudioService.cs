@@ -1,12 +1,13 @@
 using System.Collections.Concurrent;
+using System.Text;
 using System.Text.Json;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ThornBot.Handlers;
 using Victoria;
 using Victoria.Enums;
-using Victoria.Rest.Payloads;
 using Victoria.WebSocket.EventArgs;
 
 namespace ThornBot.Services;
@@ -18,6 +19,7 @@ public sealed class AudioService
     private readonly DiscordSocketClient _socketClient;
     private readonly RadioService _radioService;
     private readonly ILogger _logger;
+    private readonly HttpClient _lavalinkHttp;
     public readonly HashSet<ulong> VoteQueue;
     private readonly ConcurrentDictionary<ulong, CancellationTokenSource> _disconnectTokens;
     public readonly ConcurrentDictionary<ulong, ulong> TextChannels;
@@ -28,6 +30,7 @@ public sealed class AudioService
         LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode,
         DiscordSocketClient socketClient,
         RadioService radioService,
+        IConfiguration configuration,
         ILogger<AudioService> logger)
     {
         _lavaNode = lavaNode;
@@ -39,6 +42,22 @@ public sealed class AudioService
         _requesters = new ConcurrentDictionary<string, IUser>();
         _nowPlayingMessages = new ConcurrentDictionary<ulong, IUserMessage>();
         VoteQueue = [];
+
+        // Victoria's own UpdatePlayerAsync always serializes with
+        // JsonIgnoreCondition.WhenWritingDefault, which silently strips ANY field
+        // equal to its default — including an intentional EncodedTrack: null,
+        // since null IS string's default. That means Victoria itself can never put
+        // the literal `"encodedTrack": null` on the wire that Lavalink needs to
+        // actually stop a track; going through it always produces an effectively
+        // empty PATCH body, which Lavalink treats as "no change." StopPlaybackAsync
+        // below issues that request by hand instead, same host/port/auth as the
+        // AddLavaNode config in ThornBot.cs.
+        var hostname = configuration["lavalink:hostname"] ?? "localhost";
+        var port = configuration["lavalink:port"] is not null ? ushort.Parse(configuration["lavalink:port"]!) : (ushort)2333;
+        var authorization = configuration["lavalink:authorization"] ?? "youshallnotpass";
+        _lavalinkHttp = new HttpClient { BaseAddress = new Uri($"http://{hostname}:{port}") };
+        _lavalinkHttp.DefaultRequestHeaders.Add("Authorization", authorization);
+
         _lavaNode.OnWebSocketClosed += OnWebSocketClosedAsync;
         _lavaNode.OnStats += OnStatsAsync;
         _lavaNode.OnPlayerUpdate += OnPlayerUpdateAsync;
@@ -76,12 +95,18 @@ public sealed class AudioService
     // Victoria's own LavaPlayer.StopAsync() extension is broken: it resends the
     // CURRENTLY PLAYING track's own encoded hash instead of null, so Lavalink just
     // pauses the same still-loaded track rather than clearing it. No real TrackEnd
-    // event ever fires, player.Track stays stuck non-null forever, and the next
-    // /play gets enqueued instead of played immediately (it only ever sees a
-    // "still playing" player). Calling UpdatePlayerAsync directly with
-    // EncodedTrack: null is what Lavalink actually needs to see to stop.
-    public Task StopPlaybackAsync(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, ulong guildId) =>
-        lavaNode.UpdatePlayerAsync(guildId, replaceTrack: false, new UpdatePlayerPayload(EncodedTrack: null));
+    // event ever fires, and player.Track stays stuck non-null forever. Victoria's
+    // UpdatePlayerAsync can't fix this either — its serializer strips the null
+    // we'd want to send (see the constructor comment) — so this bypasses Victoria
+    // entirely and PATCHes Lavalink's REST API by hand with a literal JSON null,
+    // which is what actually stops playback.
+    public async Task StopPlaybackAsync(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, ulong guildId)
+    {
+        using var body = new StringContent("{\"encodedTrack\":null}", Encoding.UTF8, "application/json");
+        using var response = await _lavalinkHttp.PatchAsync(
+            $"/v4/sessions/{lavaNode.SessionId}/players/{guildId}?noReplace=false", body);
+        response.EnsureSuccessStatusCode();
+    }
 
     // Clears both the queue and the requester tracking for whatever's still in it —
     // shared by every stop path (slash command, button, idle auto-disconnect) so
