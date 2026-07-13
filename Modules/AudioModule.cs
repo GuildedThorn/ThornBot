@@ -163,7 +163,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
     [SlashCommand("stop", "Stops the current song and clears the queue."), RequirePlayer, RequireRadioNotLive]
     public async Task StopAsync()
     {
-        // AnnounceStoppedAsync (a Discord message edit) and player.StopAsync (a
+        // AnnounceStoppedAsync (a Discord message edit) and StopPlaybackAsync (a
         // LavaLink round trip) both happen before we can respond — either can push
         // past the 3s interaction ack window, same reasoning as /play's DeferAsync.
         await DeferAsync(ephemeral: true);
@@ -177,15 +177,11 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
 
         try
         {
-            var queue = player.GetQueue();
-            foreach (var queuedTrack in queue)
-                audioService.ClearRequester(queuedTrack);
-            queue.Clear();
-
+            audioService.ClearQueue(player);
             audioService.ClearRequester(player.Track);
             var displayName = Context.User is IGuildUser guildUser ? guildUser.DisplayName : Context.User.Username;
             await audioService.AnnounceStoppedAsync(Context.Guild.Id, displayName);
-            await player.StopAsync(_lavaNode, player.Track);
+            await audioService.StopPlaybackAsync(_lavaNode, Context.Guild.Id);
             await FollowupAsync(embed: await EmbedHandler.CreateBasicEmbed(
                 "⏹️ Stopped", "Playback stopped and the queue was cleared.", EmbedColors.Success), ephemeral: true);
         }
@@ -245,7 +241,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
             {
                 audioService.ClearRequester(player.Track);
                 await audioService.AnnounceQueueFinishedAsync(Context.Guild.Id);
-                await player.StopAsync(lavaNode, player.Track);
+                await audioService.StopPlaybackAsync(lavaNode, Context.Guild.Id);
             }
             await RespondAsync(embed: await EmbedHandler.CreateBasicEmbed(
                 "⏹️ Queue Finished", "That was the last track — nothing left to play.", EmbedColors.Success), ephemeral: true);

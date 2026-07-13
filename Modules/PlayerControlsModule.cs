@@ -67,7 +67,7 @@ public class PlayerControlsModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lav
         catch (InvalidOperationException)
         {
             audioService.ClearRequester(player.Track);
-            await player.StopAsync(lavaNode, player.Track);
+            await audioService.StopPlaybackAsync(lavaNode, Context.Guild.Id);
             var embed = await EmbedHandler.CreateBasicEmbed(
                 "⏹️ Queue Finished", "That was the last track — nothing left to play.", EmbedColors.Success);
             await component.UpdateAsync(p =>
@@ -85,8 +85,9 @@ public class PlayerControlsModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lav
         var player = await lavaNode.TryGetPlayerAsync(Context.Guild.Id);
         if (player?.Track is not null)
         {
+            audioService.ClearQueue(player);
             audioService.ClearRequester(player.Track);
-            await player.StopAsync(lavaNode, player.Track);
+            await audioService.StopPlaybackAsync(lavaNode, Context.Guild.Id);
         }
 
         var displayName = Context.User is IGuildUser guildUser ? guildUser.DisplayName : Context.User.Username;

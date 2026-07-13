@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using ThornBot.Handlers;
 using Victoria;
 using Victoria.Enums;
+using Victoria.Rest.Payloads;
 using Victoria.WebSocket.EventArgs;
 
 namespace ThornBot.Services;
@@ -70,6 +71,27 @@ public sealed class AudioService
 
         player.GetQueue().Enqueue(track);
         return false;
+    }
+
+    // Victoria's own LavaPlayer.StopAsync() extension is broken: it resends the
+    // CURRENTLY PLAYING track's own encoded hash instead of null, so Lavalink just
+    // pauses the same still-loaded track rather than clearing it. No real TrackEnd
+    // event ever fires, player.Track stays stuck non-null forever, and the next
+    // /play gets enqueued instead of played immediately (it only ever sees a
+    // "still playing" player). Calling UpdatePlayerAsync directly with
+    // EncodedTrack: null is what Lavalink actually needs to see to stop.
+    public Task StopPlaybackAsync(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, ulong guildId) =>
+        lavaNode.UpdatePlayerAsync(guildId, replaceTrack: false, new UpdatePlayerPayload(EncodedTrack: null));
+
+    // Clears both the queue and the requester tracking for whatever's still in it —
+    // shared by every stop path (slash command, button, idle auto-disconnect) so
+    // "stop" consistently means "stop and forget everything queued."
+    public void ClearQueue(LavaPlayer<LavaTrack> player)
+    {
+        var queue = player.GetQueue();
+        foreach (var queuedTrack in queue)
+            ClearRequester(queuedTrack);
+        queue.Clear();
     }
 
     // Called by /stop (the button already edits the message itself when it
@@ -262,9 +284,9 @@ public sealed class AudioService
             var player = await _lavaNode.TryGetPlayerAsync(guildId);
             if (player?.Track is not null)
             {
-                ClearRequester(player.Track);
+                ClearQueue(player);
                 await FinalizeNowPlayingAsync(guildId, "⏹️ Left", "Nobody was listening, so I left the channel.");
-                await player.StopAsync(_lavaNode, player.Track);
+                await StopPlaybackAsync(_lavaNode, guildId);
             }
 
             try
