@@ -17,7 +17,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
 
     private readonly AudioService _audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
 
-    [SlashCommand("join", "Makes the bot join your voice channel.")]
+    [SlashCommand("join", "Makes the bot join your voice channel."), RequireRadioNotLive]
     public async Task JoinAsync()
     {
         if (Context.Guild == null)
@@ -45,7 +45,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
         }
     }
 
-    [SlashCommand("resume", "Resume the current song in the queue"), RequirePlayer]
+    [SlashCommand("resume", "Resume the current song in the queue"), RequirePlayer, RequireRadioNotLive]
     public async Task ResumeAsync()
     {
         var player = await lavaNode.TryGetPlayerAsync(Context.Guild.Id);
@@ -67,7 +67,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
         }
     }
 
-    [SlashCommand("leave", "Makes the bot leave the voice channel.")]
+    [SlashCommand("leave", "Makes the bot leave the voice channel."), RequireRadioNotLive]
     public async Task LeaveAsync()
     {
         var guildUser = Context.User as SocketGuildUser;
@@ -90,7 +90,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
         }
     }
 
-    [SlashCommand("play", "Plays a song.")]
+    [SlashCommand("play", "Plays a song."), RequireRadioNotLive]
     public async Task PlayAsync([Remainder] string searchQuery)
     {
         if (string.IsNullOrWhiteSpace(searchQuery))
@@ -160,7 +160,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
     }
 
 
-    [SlashCommand("stop", "Stops the current song and clears the queue."), RequirePlayer]
+    [SlashCommand("stop", "Stops the current song and clears the queue."), RequirePlayer, RequireRadioNotLive]
     public async Task StopAsync()
     {
         var player = await _lavaNode.TryGetPlayerAsync(Context.Guild.Id);
@@ -181,7 +181,7 @@ public class AudioModule(LavaNode<LavaPlayer<LavaTrack>, LavaTrack> lavaNode, Au
         }
     }
 
-    [SlashCommand("skip", "Skip the current playing song in the queue"), RequirePlayer]
+    [SlashCommand("skip", "Skip the current playing song in the queue"), RequirePlayer, RequireRadioNotLive]
     public async Task SkipAsync()
     {
         var player = await lavaNode.TryGetPlayerAsync(Context.Guild.Id);
