@@ -8,6 +8,7 @@ using ThornBot.Handlers;
 using ThornBot.Services;
 using DotNetEnv;
 using Victoria;
+using Victoria.WebSocket.Internal;
 
 namespace ThornBot;
 
@@ -107,6 +108,17 @@ public class ThornBot : IAsyncDisposable
                 x.Port = config["lavalink:port"] is not null ? ushort.Parse(config["lavalink:port"]!) : 2333;
                 x.Authorization = config["lavalink:authorization"] ?? "youshallnotpass";
                 x.SelfDeaf = config["lavalink:selfdeaf"] is not null && bool.Parse(config["lavalink:selfdeaf"]!);
+
+                // Victoria's WebSocketClient.ReceiveAsync only ever appends *continuation*
+                // fragments to its reassembly buffer — the final fragment (the one where
+                // EndOfMessage is true) never gets copied in before the message is handed
+                // off, so any event split across multiple frames gets silently truncated
+                // at the BufferSize boundary (default 2048). That corrupted the JSON for
+                // large events (e.g. TrackEnd), which both spammed "problem parsing JSON"
+                // and left the local player state stuck thinking a track was still
+                // playing. Raising BufferSize to the max means virtually every message
+                // fits in one frame, so that buggy continuation path never triggers.
+                x.SocketConfiguration = x.SocketConfiguration with { BufferSize = ushort.MaxValue };
             })
             .AddSingleton<EventsHandler>()
             .AddSingleton<CommandHandler>()
