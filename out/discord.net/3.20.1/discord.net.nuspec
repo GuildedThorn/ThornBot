@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Discord.Net</id>
+    <version>3.20.1</version>
+    <title>Discord.Net</title>
+    <authors>Discord.Net Contributors</authors>
+    <owners>foxbot</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>PackageLogo.png</icon>
+    <readme>NUGET_README.md</readme>
+    <projectUrl>https://github.com/discord-net/Discord.Net</projectUrl>
+    <description>An asynchronous API wrapper for Discord. This metapackage includes all of the optional Discord.Net components.</description>
+    <tags>discord;discordapp</tags>
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Discord.Net.Core" version="3.20.1" />
+        <dependency id="Discord.Net.Rest" version="3.20.1" />
+        <dependency id="Discord.Net.WebSocket" version="3.20.1" />
+        <dependency id="Discord.Net.Commands" version="3.20.1" />
+        <dependency id="Discord.Net.Webhook" version="3.20.1" />
+        <dependency id="Discord.Net.Interactions" version="3.20.1" />
+      </group>
+      <group targetFramework="net9.0">
+        <dependency id="Discord.Net.Core" version="3.20.1" />
+        <dependency id="Discord.Net.Rest" version="3.20.1" />
+        <dependency id="Discord.Net.WebSocket" version="3.20.1" />
+        <dependency id="Discord.Net.Commands" version="3.20.1" />
+        <dependency id="Discord.Net.Webhook" version="3.20.1" />
+        <dependency id="Discord.Net.Interactions" version="3.20.1" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Discord.Net.Core" version="3.20.1" />
+        <dependency id="Discord.Net.Rest" version="3.20.1" />
+        <dependency id="Discord.Net.WebSocket" version="3.20.1" />
+        <dependency id="Discord.Net.Commands" version="3.20.1" />
+        <dependency id="Discord.Net.Webhook" version="3.20.1" />
+        <dependency id="Discord.Net.Interactions" version="3.20.1" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

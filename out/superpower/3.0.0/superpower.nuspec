@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Superpower</id>
+    <version>3.0.0</version>
+    <authors>Datalust,Superpower Contributors,Sprache Contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>Superpower-White-400px.png</icon>
+    <projectUrl>https://github.com/datalust/superpower</projectUrl>
+    <description>A parser combinator library for C#</description>
+    <tags>superpower parser</tags>
+    <repository type="git" url="https://github.com/datalust/superpower" />
+    <dependencies>
+      <group targetFramework="net5.0" />
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
+  </metadata>
+</package>

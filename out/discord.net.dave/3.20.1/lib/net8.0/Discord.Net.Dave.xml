@@ -1,0 +1,1216 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Discord.Net.Dave</name>
+    </assembly>
+    <members>
+        <member name="T:Discord.LibDave.AllocHandle">
+            <summary>
+                A <see langword="ref"/> <see langword="struct"/> wrapping a pointer to native memory, providing <c>free</c> as
+                a disposable.
+            </summary>
+            <param name="ptr">The underlying pointer to native memory.</param>
+        </member>
+        <member name="M:Discord.LibDave.AllocHandle.#ctor(System.IntPtr)">
+            <summary>
+                A <see langword="ref"/> <see langword="struct"/> wrapping a pointer to native memory, providing <c>free</c> as
+                a disposable.
+            </summary>
+            <param name="ptr">The underlying pointer to native memory.</param>
+        </member>
+        <member name="P:Discord.LibDave.AllocHandle.Pointer">
+            <summary>
+                The underlying pointer.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.AllocHandle.Dispose">
+            <summary>
+                Frees the underlying pointer.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.DaveLogSinkDelegate">
+            <summary>
+                A delegate for handling logs from the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="severity">The log severity.</param>
+            <param name="file">The file that produced the log.</param>
+            <param name="line">The line number of the log.</param>
+            <param name="message">The log message.</param>
+        </member>
+        <member name="T:Discord.LibDave.Dave">
+            <summary>
+                A class providing safe interop with the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Dave.InitTransitionId">
+            <summary>
+                The initial transition id.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Dave.DisabledProtocolVersion">
+            <summary>
+                The protocol version representing dave e2ee being disabled.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Dave.MLSNewGroupExpectedEpoch">
+            <summary>
+                The expected epoch of a new MLS group.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.Dave.MaxSupportedProtocolVersion">
+            <summary>
+                Gets the max supported protocol version of the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.Dave.CheckAvailability">
+            <summary>
+                Checks if <see cref="T:Discord.LibDave.Binding.libdave"/> is available in the host environment.
+            </summary>
+            <returns>
+                <see langword="true"/> if <see cref="T:Discord.LibDave.Binding.libdave"/> is available to use; otherwise <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.LibDave.Dave.SetLogSink(Discord.LibDave.DaveLogSinkDelegate)">
+            <summary>
+                Sets the global log sink for the <see cref="T:Discord.LibDave.Binding.libdave"/> binding.
+            </summary>
+            <param name="logSink">The delegate to handle logs.</param>
+        </member>
+        <member name="M:Discord.LibDave.Dave.CreateSession(System.String,System.String)">
+            <summary>
+                Creates a new <see cref="T:Discord.LibDave.Binding.libdave"/> session.
+            </summary>
+            <param name="context">The context for the session.</param>
+            <param name="authSessionId">The authentication session id.</param>
+            <returns>
+                A <see cref="T:Discord.LibDave.DaveSession"/> providing safe interop with the <c>libdave</c> library.
+            </returns>
+        </member>
+        <member name="M:Discord.LibDave.Dave.CreateDecryptor">
+            <summary>
+                Creates a new decryptor.
+            </summary>
+            <returns>
+                A <see cref="T:Discord.LibDave.DaveDecryptor"/> providing safe interop with the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </returns>
+        </member>
+        <member name="M:Discord.LibDave.Dave.CreateEncryptor">
+            <summary>
+                Creates a new encryptor.
+            </summary>
+            <returns>
+                A <see cref="T:Discord.LibDave.DaveEncryptor"/> providing safe interop with the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </returns>
+        </member>
+        <member name="T:Discord.LibDave.DaveAllocatedSpan`1">
+            <summary>
+                Represents a region of memory allocated by the <see cref="T:Discord.LibDave.Binding.libdave"/> binding.
+            </summary>
+            <typeparam name="T">The underlying element type.</typeparam>
+        </member>
+        <member name="P:Discord.LibDave.DaveAllocatedSpan`1.Item(System.Int32)">
+            <summary>
+                Gets an element in this span at the specified index.
+            </summary>
+            <param name="index">The index of the element to get.</param>
+            <exception cref="T:System.IndexOutOfRangeException">The index is out of bounds.</exception>
+        </member>
+        <member name="P:Discord.LibDave.DaveAllocatedSpan`1.HasData">
+            <summary>
+                Gets whether this span has any data.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.DaveAllocatedSpan`1.IsEmpty">
+            <summary>
+                Gets whether the span is empty.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.DaveAllocatedSpan`1.IsNull">
+            <summary>
+                Gets whether the underlying pointer is null.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.DaveAllocatedSpan`1.AsSpan">
+            <summary>
+                Creates a <see cref="T:System.ReadOnlySpan`1"/> wrapping the underlying pointer.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.DaveAllocatedSpan`1.ToArray">
+            <summary>
+                Copies this span to a new array.
+            </summary>
+            <returns>The array containing a copy of this spans content.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveAllocatedSpan`1.ToMemory">
+            <summary>
+                Copies this span to a new <see cref="T:System.ReadOnlyMemory`1"/>.
+            </summary>
+            <returns>The <see cref="T:System.ReadOnlyMemory`1"/> containing a copy of this spans content.</returns>
+        </member>
+        <member name="F:Discord.LibDave.DaveAllocatedSpan`1.Length">
+            <summary>
+                Gets the length of this span.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.DaveAllocatedSpan`1.#ctor(`0*,System.Int32)">
+            <summary>
+                Constructs a new <see cref="T:Discord.LibDave.DaveAllocatedSpan`1"/>
+            </summary>
+            <param name="pointer">The pointer to the first element in the span.</param>
+            <param name="length">The number of elements in the span.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveAllocatedSpan`1.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.LibDave.DaveCommitResult">
+            <summary>
+                A class representing the result of processing a commit within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the commit object in the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveCommitResult.#ctor(System.UIntPtr)">
+            <summary>
+                A class representing the result of processing a commit within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the commit object in the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="P:Discord.LibDave.DaveCommitResult.IsAlive">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveCommitResult.UnderlyingHandle">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveCommitResult.IsFailed">
+            <summary>
+                Gets whether this commit has failed.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.DaveCommitResult.IsIgnored">
+            <summary>
+                Gets whether this commit is ignored.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.DaveCommitResult.GetRosterMemberIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.LibDave.DaveCommitResult.GetRosterMemberSignature(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.LibDave.DaveCommitResult.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.LibDave.DaveDecryptor">
+            <summary>
+                Represents a decryptor within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the decryptor.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveDecryptor.#ctor(System.UIntPtr)">
+            <summary>
+                Represents a decryptor within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the decryptor.</param>
+        </member>
+        <member name="P:Discord.LibDave.DaveDecryptor.IsAlive">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveDecryptor.UnderlyingHandle">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveDecryptor.Ratchet">
+            <summary>
+                Gets or sets the ratchet used by this decryptor.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.DaveDecryptor.PrepareTransition(Discord.LibDave.DaveSession,System.UInt64,System.Nullable{System.Int32})">
+            <summary>
+                Prepares this decryptor for transitioning to a new protocol version.
+            </summary>
+            <param name="session">The session this decryptor is used by.</param>
+            <param name="selfUserId">The snowflake identifier of the current user.</param>
+            <param name="protocolVersion">The protocol version that is being transitioned to.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveDecryptor.TransitionToPassthroughMode(System.Boolean)">
+            <summary>
+                Transitions this decryptor to the provided passthrough mode.
+            </summary>
+            <param name="passthroughMode">
+                <see langword="true"/> if this decryptor should pass though data undecrypted; <see langword="false"/> to
+                decrypt data.
+            </param>
+        </member>
+        <member name="M:Discord.LibDave.DaveDecryptor.Decrypt(System.ReadOnlyMemory{System.Byte},Discord.LibDave.Binding.MediaType,System.Buffers.IMemoryOwner{System.Byte}@,System.Int32@)">
+            <summary>
+                Decrypts a given frame.
+            </summary>
+            <param name="encryptedFrame">The encrypted frame to decrypt.</param>
+            <param name="mediaType">The type of media within the provided encrypted frame.</param>
+            <param name="frame">The unencrypted frame.</param>
+            <param name="frameSize">The length of the unencrypted frame.</param>
+            <returns>The result of decrypting.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveDecryptor.GetMaxPlaintextByteSize(Discord.LibDave.Binding.MediaType,System.Int32)">
+            <summary>
+                Gets the max size in bytes of plaintext, given the encrypted length and media type.
+            </summary>
+            <param name="mediaType">The media type of the encrypted data.</param>
+            <param name="encryptedFrameSize">The length of the encrypted data.</param>
+            <returns>The max size in bytes of the plaintext.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveDecryptor.GetStats(Discord.LibDave.Binding.MediaType)">
+            <summary>
+                Gets statistics about this decryptor.
+            </summary>
+            <param name="mediaType">The media type of the statistics to get.</param>
+            <returns>The statistics for the given media type.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveDecryptor.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.LibDave.DaveEncryptor">
+            <summary>
+                Represents an encryptor within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the encryptor object within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveEncryptor.#ctor(System.UIntPtr)">
+            <summary>
+                Represents an encryptor within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the encryptor object within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="P:Discord.LibDave.DaveEncryptor.IsAlive">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveEncryptor.UnderlyingHandle">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveEncryptor.ProtocolVersion">
+            <summary>
+                Gets the protocol version of this encryptor.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.DaveEncryptor.Ratchet">
+            <summary>
+                Gets or sets the ratchet used by this encryptor.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.DaveEncryptor.IsInPassthroughMode">
+            <summary>
+                Gets or sets the pass through mode of this encryptor.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.DaveEncryptor.AssignSsrcToCodec(System.UInt32,Discord.LibDave.Binding.Codec)">
+            <summary>
+                Assigns a SSRC to a codec used by this encryptor.
+            </summary>
+            <param name="ssrc">The SSRC to assign.</param>
+            <param name="codec">The codec to assign the SSRC to.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveEncryptor.GetMaxCiphertextByteSize(Discord.LibDave.Binding.MediaType,System.Int32)">
+            <summary>
+                Gets the max size in bytes of ciphertext this encryptor will produce, given the media type and frame size.
+            </summary>
+            <param name="mediaType">The media type of the frame.</param>
+            <param name="frameSize">The size of the frame.</param>
+            <returns>The max size in bytes of the ciphertext.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveEncryptor.Encrypt(System.ReadOnlyMemory{System.Byte},Discord.LibDave.Binding.MediaType,System.UInt32,System.Buffers.IMemoryOwner{System.Byte}@,System.Int32@)">
+            <summary>
+                Encrypts a given frame.
+            </summary>
+            <param name="frame">The frame to encrypt.</param>
+            <param name="mediaType">The media type of the frame.</param>
+            <param name="ssrc">The SSRC of the frame.</param>
+            <param name="encrypted">The encrypted frame.</param>
+            <param name="encryptedLength">The length of the encrypted frame.</param>
+            <returns>The result of encrypting.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveEncryptor.GetStats(Discord.LibDave.Binding.MediaType)">
+            <summary>
+                Gets the statistics of this encryptor.
+            </summary>
+            <param name="mediaType">The media type of the stats to get.</param>
+            <returns>The stats of this encryptor.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveEncryptor.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.LibDave.DaveKeyRatchet">
+            <summary>
+                Represents a key ratchet within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the key ratchet object in the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveKeyRatchet.#ctor(System.UIntPtr)">
+            <summary>
+                Represents a key ratchet within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the key ratchet object in the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="P:Discord.LibDave.DaveKeyRatchet.UnderlyingHandle">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveKeyRatchet.IsAlive">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.LibDave.DaveKeyRatchet.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.LibDave.MLSFailureEventHandler">
+            <summary>
+                A delegate representing a handler for MLS failure events.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.DaveSession">
+            <summary>
+                Represents a session within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the session object within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.#ctor(System.UIntPtr)">
+            <summary>
+                Represents a session within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the session object within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="P:Discord.LibDave.DaveSession.UnderlyingHandle">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.LibDave.DaveSession.IsAlive">
+            <inheritdoc/>
+        </member>
+        <member name="E:Discord.LibDave.DaveSession.OnMLSFailure">
+            <summary>
+                Gets or sets the event handler for MLS failures.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.DaveSession.ProtocolVersion">
+            <summary>
+                Gets or sets the protocol version of this session.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.Initialize(System.UInt16,System.UInt64,System.UInt64)">
+            <summary>
+                Initializes this session.
+            </summary>
+            <param name="protocolVersion">The protocol version of the session.</param>
+            <param name="groupId">The group ID (channel ID) of the session.</param>
+            <param name="selfUserId">The ID of the current user.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.Reset">
+            <summary>
+                Resets the current session.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.GetLastEpochAuthenticator">
+            <summary>
+                Gets the last epoch authenticator of this session.
+            </summary>
+            <returns>The last epoch authenticator.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.SetExternalSender(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+                Sets the external sender of this session.
+            </summary>
+            <param name="externalSender">The external sender.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.ProcessProposals(System.ReadOnlyMemory{System.Byte},System.Collections.Generic.ICollection{System.UInt64})">
+            <summary>
+                Processes proposals for this session.
+            </summary>
+            <param name="proposals">The proposals to process.</param>
+            <param name="recognizedUserIds">The snowflake identifiers of any recognized users.</param>
+            <returns>The result of the proposal.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.ProcessCommit(System.ReadOnlyMemory{System.Byte})">
+            <summary>
+                Processes a commit message for this session.
+            </summary>
+            <param name="commit">The commit to process.</param>
+            <returns>The result of processing the commit.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.ProcessWelcome(System.ReadOnlyMemory{System.Byte},System.Collections.Generic.ICollection{System.UInt64})">
+            <summary>
+                Processes a welcome message for this session.
+            </summary>
+            <param name="welcome">The welcome message to process.</param>
+            <param name="recognizedUserIds">The snowflake identifiers of any recognized users.</param>
+            <returns>The result of processing the welcome message.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.GetMarshalledKeyPackage">
+            <summary>
+                Gets the sessions marshalled key package.
+            </summary>
+            <returns>The marshalled key package.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.GetKeyRatchet(System.UInt64)">
+            <summary>
+                Gets the key ratchet for a user based on their snowflake identifier.
+            </summary>
+            <param name="userId">The snowflake identifier of the user.</param>
+            <returns>The key ratchet for the given user.</returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.GetPairwiseFingerprintAsync(System.UInt64,System.Nullable{System.UInt16},System.Threading.CancellationToken)">
+            <summary>
+                Gets a users pairwise fingerprint.
+            </summary>
+            <param name="userId">The users snowflake identifier.</param>
+            <param name="protocolVersion">The current protocol version.</param>
+            <param name="token">A <see cref="T:System.Threading.CancellationToken"/> used to cancel the asynchronous operation.</param>
+            <returns>
+                A task representing the asynchronous operation of getting a users pairwise fingerprint. The result of
+                the task is the fingerprint.
+            </returns>
+        </member>
+        <member name="M:Discord.LibDave.DaveSession.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.LibDave.DaveWelcomeResult">
+            <summary>
+                A class representing the result of processing a welcome message within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the welcome result within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveWelcomeResult.#ctor(System.UIntPtr)">
+            <summary>
+                A class representing the result of processing a welcome message within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+            <param name="handle">The underlying handle to the welcome result within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.</param>
+        </member>
+        <member name="M:Discord.LibDave.DaveWelcomeResult.GetRosterMemberIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.LibDave.DaveWelcomeResult.GetRosterMemberSignature(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.LibDave.DaveWelcomeResult.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.LibDave.IdsHandle">
+            <summary>
+                A <see langword="ref"/> <see langword="struct"/> representing an array of snowflakes, encoded as strings,
+                allocated in native memory.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.IdsHandle.Pointer">
+            <summary>
+                The pointer of the first id.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.IdsHandle.Length">
+            <summary>
+                The number of ids.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.IdsHandle.#ctor(System.Void*,System.Int32)">
+            <summary>
+                Creates a new <see cref="T:Discord.LibDave.IdsHandle"/>.
+            </summary>
+            <param name="pointer">The pointer to the first element.</param>
+            <param name="length">The number of elements.</param>
+        </member>
+        <member name="M:Discord.LibDave.IdsHandle.Dispose">
+            <summary>
+                Frees the underlying memory.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.INativeHandle">
+            <summary>
+                Represents a wrapper around a native handle to a <see cref="T:Discord.LibDave.Binding.libdave"/> object.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.INativeHandle.UnderlyingHandle">
+            <summary>
+                Gets the underlying pointer this object represents.
+            </summary>
+        </member>
+        <member name="P:Discord.LibDave.INativeHandle.IsAlive">
+            <summary>
+                Gets whether the current object is alive and can be used.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.NativeHandleExtensions">
+            <summary>
+                A class containing extensions related to <see cref="T:Discord.LibDave.INativeHandle"/>.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.NativeHandleExtensions.get_IsNull``1(``0)">
+            <inheritdoc cref="P:Discord.LibDave.NativeHandleExtensions.&lt;G&gt;$EAF9295973BB6D06A7299548C853AF25`1.IsNull"/>
+        </member>
+        <member name="M:Discord.LibDave.NativeHandleExtensions.ThrowIfNotAlive``1(``0)">
+            <inheritdoc cref="M:Discord.LibDave.NativeHandleExtensions.&lt;G&gt;$EAF9295973BB6D06A7299548C853AF25`1.ThrowIfNotAlive"/>
+        </member>
+        <member name="P:Discord.LibDave.NativeHandleExtensions.&lt;G&gt;$EAF9295973BB6D06A7299548C853AF25`1.IsNull">
+            <summary>
+                Gets whether the underlying handle is null.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.NativeHandleExtensions.&lt;G&gt;$EAF9295973BB6D06A7299548C853AF25`1.ThrowIfNotAlive">
+            <summary>
+                Throws if the underlying not alive.
+            </summary>
+            <exception cref="T:System.ObjectDisposedException">The underlying handle is no longer alive.</exception>
+        </member>
+        <member name="T:Discord.LibDave.IRosterProvider">
+            <summary>
+                An interface providing roster details.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.IRosterProvider.GetRosterMemberSignature(System.UInt64)">
+            <summary>
+                Gets the signature of a given user based on their ID.
+            </summary>
+            <param name="userId">The snowflake identifier of the user whose signature to get.</param>
+            <returns>The signature of the given user.</returns>
+        </member>
+        <member name="M:Discord.LibDave.IRosterProvider.GetRosterMemberIds">
+            <summary>
+                Gets the user ids within this roster.
+            </summary>
+            <returns>The snowflake identifiers of the users within this roster.</returns>
+        </member>
+        <member name="T:Discord.LibDave.Binding.Codec">
+            <summary>
+                An enum representing the different codes within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.Codec.Unknown">
+            <summary>
+                An unknown codec.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.Codec.Opus">
+            <summary>
+                The opus codec.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.Codec.VP8">
+            <summary>
+                The VP8 codec.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.Codec.VP9">
+            <summary>
+                The VP9 codec.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.Codec.H264">
+            <summary>
+                The H264 codec.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.Codec.H265">
+            <summary>
+                The H265 codec.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.Codec.AV1">
+            <summary>
+                The AV1 codec.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.EncryptorResultCode">
+            <summary>
+                Represents the result of encrypting.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorResultCode.Success">
+            <summary>
+                The encryption was a success.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorResultCode.EncryptionFailure">
+            <summary>
+                The encryption failed.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorResultCode.MissingKeyRatchet">
+            <summary>
+                No key ratchet available.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorResultCode.MissingCryptor">
+            <summary>
+                Missing cryptographic context.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorResultCode.TooManyAttempts">
+            <summary>
+                Too many attempts to encrypt the frame failed.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.DecryptorResultCode">
+            <summary>
+                Represents the result of decrypting.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorResultCode.Success">
+            <summary>
+                The decryption was a success.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorResultCode.DecryptionFailure">
+            <summary>
+                The decryption failed.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorResultCode.MissingKeyRatchet">
+            <summary>
+                The decryption failed because of a missing key ratchet.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorResultCode.InvalidNonce">
+            <summary>
+                The decryption failed because of an invalid nonce.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorResultCode.MissingCryptor">
+            <summary>
+                The decryption failed because of a missing cryptor.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.LoggingSeverity">
+            <summary>
+                Represents the logging severity within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.LoggingSeverity.Verbose">
+            <summary>
+                A verbose log.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.LoggingSeverity.Info">
+            <summary>
+                An informative log.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.LoggingSeverity.Warning">
+            <summary>
+                A warning log.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.LoggingSeverity.Error">
+            <summary>
+                An error log.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.LoggingSeverity.None">
+            <summary>
+                No severity.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.MediaType">
+            <summary>
+                Represents media type within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.MediaType.Audio">
+            <summary>
+                Audio media.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.MediaType.Video">
+            <summary>
+                Video media.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.EncryptorStats">
+            <summary>
+                A struct containing statistics related to an encryptor within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorStats.PassThroughCount">
+            <summary>
+                The number of pass through frames.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorStats.EncryptSuccessCount">
+            <summary>
+                The number of successful encryptions.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorStats.EncryptFailureCount">
+            <summary>
+                The number of failed encryptions.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorStats.EncryptDuration">
+            <summary>
+                The duration of encryption.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorStats.EncryptAttempts">
+            <summary>
+                The number of encryption attempts.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorStats.EncryptMaxAttempts">
+            <summary>
+                The max number of encryption attempts.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.EncryptorStats.EncryptMissingKeyCount">
+            <summary>
+                The number of missing keys.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.DecryptorStats">
+            <summary>
+                A struct containing statistics related to a decryptor within the <see cref="T:Discord.LibDave.Binding.libdave"/> library.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorStats.PassThroughCount">
+            <summary>
+                The number of pass through frames.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorStats.DecryptSuccessCount">
+            <summary>
+                The number of successful decryptions.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorStats.DecryptFailureCount">
+            <summary>
+                The number of failed decryptions.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorStats.DecryptDuration">
+            <summary>
+                The duration of decryption.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorStats.DecryptAttempts">
+            <summary>
+                The number of decryption attempts.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorStats.DecryptMissingKeyCount">
+            <summary>
+                The number failed decryptions due to missing keys.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Binding.DecryptorStats.DecryptInvalidNonceCount">
+            <summary>
+                The number of failed decryptions due to invalid nonces
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.BoolMarshaller">
+            <summary>
+                Marshals to/from the stdbool.h type.
+            </summary>
+        </member>
+        <member name="T:Discord.LibDave.Binding.libdave">
+            <summary>
+                A class providing the raw interop with the <c>libdave</c> binding.
+            </summary>
+            <remarks>
+                It's recommended to use <see cref="T:Discord.LibDave.Dave"/> to interact with <c>libdave</c> in a safe mannar, only use this
+                class if you know what you're doing!!!
+            </remarks>
+        </member>
+        <member name="F:Discord.LibDave.Binding.libdave.LIBRARY_NAME">
+            <summary>
+                The name of the <see cref="T:Discord.LibDave.Binding.libdave"/> library file.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.MaxSupportedProtocolVersion">
+            <summary>
+                Gets the maximum protocol version supported by this library.
+            </summary>
+            <returns>Maximum supported protocol version number.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.Free(System.Void*)">
+            <summary>
+                Frees memory allocated by the DAVE library
+            </summary>
+            <remarks>
+                This function should be used to free output byte arrays from functions like
+                <see cref="M:Discord.LibDave.Binding.libdave.SessionGetLastEpochAuthenticator(System.UIntPtr,System.Byte**,System.IntPtr*)"/>, <see cref="M:Discord.LibDave.Binding.libdave.SessionGetMarshalledKeyPackage(System.UIntPtr,System.Byte**,System.IntPtr*)"/>,
+                <see cref="M:Discord.LibDave.Binding.libdave.CommitResultGetRosterMemberIds(System.UIntPtr,System.UInt64**,System.UIntPtr*)"/>, etc. Do NOT use this to destroy handles; use the corresponding
+                *Destroy functions instead.
+            </remarks>
+            <param name="ptr">
+                Pointer to memory previously allocated by a DAVE API function; If <see langword="null"/>, this function does
+                nothing.
+            </param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionCreate(System.Byte*,System.Byte*,,System.Void*)">
+            <summary>
+                Creates a new DAVE session.
+            </summary>
+            <param name="context">Currently unused platform-specific context pointer (can be NULL).</param>
+            <param name="authSessionId">String used to manage persistent key lifetimes (can be NULL).</param>
+            <param name="callback">Callback invoked on MLS failures.</param>
+            <param name="userData">User data pointer passed to the callback.</param>
+            <returns>New session handle, or NULL on failure. Must be destroyed with <see cref="M:Discord.LibDave.Binding.libdave.SessionDestroy(System.UIntPtr)"/>.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionDestroy(System.UIntPtr)">
+            <summary>
+                Destroys a session and frees associated resources.
+            </summary>
+            <param name="session">Session handle to destroy.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionInit(System.UIntPtr,System.UInt16,System.UInt64,System.ReadOnlySpan{System.Byte})">
+            <summary>
+                Initializes a session with protocol version and group information.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="version">The protocol version to use.</param>
+            <param name="groupId">The group identifier common to all users in the group.</param>
+            <param name="selfUserId">The user ID of the local user.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionReset(System.UIntPtr)">
+            <summary>
+                Resets the session state.
+            </summary>
+            <param name="session">The session handle.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionSetProtocolVersion(System.UIntPtr,System.UInt16)">
+            <summary>
+                Sets the protocol version for the session.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="version">The protocol version to set.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionGetProtocolVersion(System.UIntPtr)">
+            <summary>
+                Gets the current protocol version of the session.
+            </summary>
+            <param name="session">The session handle.</param>
+            <returns>The current protocol version.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionGetLastEpochAuthenticator(System.UIntPtr,System.Byte**,System.IntPtr*)">
+            <summary>
+                Retrieves the authenticator from the last MLS epoch.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="authenticator">The output pointer to authenticator bytes (caller must free</param>
+            <param name="length">The output pointer to authenticator length</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionSetExternalSender(System.UIntPtr,System.Byte*,System.IntPtr)">
+            <summary>
+                Sets the external sender credentials for the session.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="externalSender">The external sender credential bytes.</param>
+            <param name="length">The length of external sender data.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionProcessProposals(System.UIntPtr,System.Byte*,System.IntPtr,System.Byte**,System.IntPtr,System.Byte**,System.IntPtr*)">
+            <summary>
+                Processes MLS proposals and generates commit/welcome messages.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="proposals">The serialized proposal bytes.</param>
+            <param name="length">The length of proposals.</param>
+            <param name="recognizedUserIds">The array of recognized user ID strings.</param>
+            <param name="recognizedUserIdsLength">The number of recognized user IDs.</param>
+            <param name="commitWelcomeBytes">The output buffer to commit/welcome message bytes (caller must free).</param>
+            <param name="commitWelcomeBytesLength">The output length of the commit/welcome message.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionProcessCommit(System.UIntPtr,System.Byte*,System.IntPtr)">
+            <summary>
+                Processes an incoming MLS commit message.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="commit">The serialized commit message bytes.</param>
+            <param name="length">The length of the commit message.</param>
+            <returns>The commit result handle. Must be destroyed with <see cref="M:Discord.LibDave.Binding.libdave.CommitResultDestroy(System.UIntPtr)"/>.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionProcessWelcome(System.UIntPtr,System.Byte*,System.IntPtr,System.Byte**,System.UIntPtr)">
+            <summary>
+                Processes an incoming MLS welcome message to join a group.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="welcome">Serialized welcome message bytes.</param>
+            <param name="length">The length of the welcome message.</param>
+            <param name="recognizedUserIds">Array of recognized user ID strings.</param>
+            <param name="recognizedUserIdsLength">The number of recognized user IDs.</param>
+            <returns>The welcome result handle. Must be destroyed with <see cref="M:Discord.LibDave.Binding.libdave.WelcomeResultDestroy(System.UIntPtr)"/>.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionGetMarshalledKeyPackage(System.UIntPtr,System.Byte**,System.IntPtr*)">
+            <summary>
+                 Gets the marshalled MLS key package for this session.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="keyPackage">The output buffer to key package bytes (caller must free).</param>
+            <param name="length">The output length of the key package.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionGetKeyRatchet(System.UIntPtr,System.Byte*)">
+            <summary>
+                Gets a key ratchet for a specific user in the session.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="userId">The user ID to get key ratchet for.</param>
+            <returns>The key ratchet handle. Must be destroyed with <see cref="M:Discord.LibDave.Binding.libdave.KeyRatchetDestroy(System.UIntPtr)"/>.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SessionGetPairwiseFingerprint(System.UIntPtr,System.UInt16,System.Byte*,,System.Void*)">
+            <summary>
+                Computes a pairwise fingerprint for identity verification with another user.
+            </summary>
+            <param name="session">The session handle.</param>
+            <param name="version">The protocol version currently in use.</param>
+            <param name="userId">The user ID of the remote user to compute the fingerprint for.</param>
+            <param name="callback">A callback to receive the fingerprint.</param>
+            <param name="userData">User data passed to callback.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.KeyRatchetDestroy(System.UIntPtr)">
+            <summary>
+                Destroys a key ratchet and frees associated resources.
+            </summary>
+            <param name="keyRatchet">The key ratchet handle to destroy.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.CommitResultIsFailed(System.UIntPtr)">
+            <summary>
+                Checks if processing the commit failed.
+            </summary>
+            <param name="commitResultHandle">The commit result handle.</param>
+            <returns><see langword="true"/> if the commit processing failed; otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.CommitResultIsIgnored(System.UIntPtr)">
+            <summary>
+                Checks if the commit should be ignored.
+            </summary>
+            <param name="commitResultHandle">The commit result handle.</param>
+            <returns><see langword="true"/> if the commit should be ignored; otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.CommitResultGetRosterMemberIds(System.UIntPtr,System.UInt64**,System.UIntPtr*)">
+            <summary>
+                 Gets the list of member IDs in the roster after the commit.
+            </summary>
+            <param name="commitResultHandle">The commit result handle.</param>
+            <param name="rosterIds">The output buffer to array of roster member IDs (caller must free).</param>
+            <param name="rosterIdsLength">The output length of the roster member IDs array.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.CommitResultGetRosterMemberSignature(System.UIntPtr,System.UInt64,System.Byte**,System.IntPtr*)">
+            <summary>
+                Gets the signature for a specific roster member.
+            </summary>
+            <param name="commitResultHandle">The commit result handle.</param>
+            <param name="rosterId">The roster member ID.</param>
+            <param name="signature">The output buffer to signature bytes (caller must free).</param>
+            <param name="signatureLength">The output length of the signature.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.CommitResultDestroy(System.UIntPtr)">
+            <summary>
+                Destroys a commit result and frees associated resources.
+            </summary>
+            <param name="commitResultHandle">The commit result handle to destroy.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.WelcomeResultGetRosterMemberIds(System.UIntPtr,System.UInt64**,System.IntPtr*)">
+            <summary>
+                Gets the list of member IDs in the roster from the welcome message.
+            </summary>
+            <param name="welcomeResultHandle">The welcome result handle.</param>
+            <param name="rosterIds">The output buffer to array of roster member IDs (caller must free).</param>
+            <param name="rosterIdsLength">The output length of the roster member IDs array.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.WelcomeResultGetRosterMemberSignature(System.UIntPtr,System.UInt64,System.Byte**,System.IntPtr*)">
+            <summary>
+                Gets the signature for a specific roster member.
+            </summary>
+            <param name="welcomeResultHandle">The welcome result handle.</param>
+            <param name="rosterId">The roster member ID.</param>
+            <param name="signature">The output buffer to signature bytes (caller must free).</param>
+            <param name="signatureLength">The output length of the signature.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.WelcomeResultDestroy(System.UIntPtr)">
+            <summary>
+                Destroys a welcome result and frees associated resources.
+            </summary>
+            <param name="welcomeResultHandle">The welcome result handle to destroy.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorCreate">
+            <summary>
+                Creates a new media frame encryptor.
+            </summary>
+            <returns>The wew encryptor handle. Must be destroyed with <see cref="M:Discord.LibDave.Binding.libdave.EncryptorDestroy(System.UIntPtr)"/>.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorDestroy(System.UIntPtr)">
+            <summary>
+                Destroys an encryptor and frees associated resources.
+            </summary>
+            <param name="encryptor">The encryptor handle to destroy.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorSetKeyRatchet(System.UIntPtr,System.UIntPtr)">
+            <summary>
+                Sets the key ratchet for encryption.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <param name="keyRatchet">The key ratchet to use for encryption (does <b>not</b> take ownership).</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorSetPassthroughMode(System.UIntPtr,System.Boolean)">
+            <summary>
+                Enables or disables passthrough mode (frames pass through unencrypted).
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <param name="passthroughMode">
+                <see langword="true"/> to enable passthrough; <see langword="false"/> to encrypt.
+            </param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorAssignSsrcToCodec(System.UIntPtr,System.UInt32,Discord.LibDave.Binding.Codec)">
+            <summary>
+                Associates an SSRC (Synchronization Source) with a specific codec.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <param name="ssrc">The SSRC identifier.</param>
+            <param name="codecType">The codec type for this SSRC.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorGetProtocolVersion(System.UIntPtr)">
+            <summary>
+                Gets the current protocol version used by the encryptor.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <returns>The protocol version number.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorGetMaxCiphertextByteSize(System.UIntPtr,Discord.LibDave.Binding.MediaType,System.IntPtr)">
+            <summary>
+                Calculates the maximum ciphertext size for a given plaintext frame size.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <param name="mediaType">The media type (audio or video).</param>
+            <param name="frameSize">The size of plaintext frame in bytes.</param>
+            <returns>The maximum possible ciphertext size in bytes.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorHasKeyRatchet(System.UIntPtr)">
+            <summary>
+                Checks if the encryptor has a key ratchet.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <returns>
+                <see langword="true"/> if the encryptor has the given key ratchet; otherwise <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorIsPassthroughMode(System.UIntPtr)">
+            <summary>
+                Checks if the encryptor is in passthrough mode.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <returns>
+                <see langword="true"/> if the encryptor is in passthrough mode; otherwise <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorEncrypt(System.UIntPtr,Discord.LibDave.Binding.MediaType,System.UInt32,System.Byte*,System.IntPtr,System.Byte*,System.IntPtr,System.IntPtr*)">
+            <summary>
+                Encrypts a media frame.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <param name="mediaType">The media type (audio or video).</param>
+            <param name="ssrc">The SSRC of the stream.</param>
+            <param name="frame">The pointer to plaintext frame data.</param>
+            <param name="frameLength">The length of plaintext frame.</param>
+            <param name="encryptedFrame">The pointer to the output buffer the encrypted frame will be written to.</param>
+            <param name="encryptedFrameCapacity">The capacity of the output buffer.</param>
+            <param name="bytesWritten">The number of bytes written to the output buffer.</param>
+            <returns>The result code indicating success or failure.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorSetProtocolVersionChangedCallback(System.UIntPtr,,System.Void*)">
+            <summary>
+                Sets a callback to be notified when the protocol version changes.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <param name="callback">The callback function.</param>
+            <param name="userData">User data passed to callback.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.EncryptorGetStats(System.UIntPtr,Discord.LibDave.Binding.MediaType,Discord.LibDave.Binding.EncryptorStats*)">
+            <summary>
+                Gets encryption statistics.
+            </summary>
+            <param name="encryptor">The encryptor handle.</param>
+            <param name="mediaType">The media type (audio or video).</param>
+            <param name="stats">Pointer to the stats structure to be filled.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.DecryptorCreate">
+            <summary>
+                Creates a new media frame decryptor
+            </summary>
+            <returns>
+                The new decryptor handle. Must be destroyed with <see cref="M:Discord.LibDave.Binding.libdave.DecryptorDestroy(System.UIntPtr)"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.DecryptorDestroy(System.UIntPtr)">
+            <summary>
+                Destroys a decryptor and frees associated resources.
+            </summary>
+            <param name="decryptor">The decryptor handle to destroy.</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.DecryptorTransitionToKeyRatchet(System.UIntPtr,System.UIntPtr)">
+            <summary>
+                Transitions the decryptor to use a new key ratchet.
+            </summary>
+            <param name="decryptor">The decryptor handle.</param>
+            <param name="keyRatchet">The new key ratchet to transition to (does <b>not</b> take ownership)</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.DecryptorTransitionToPassthroughMode(System.UIntPtr,System.Boolean)">
+            <summary>
+                Transitions to or from passthrough mode.
+            </summary>
+            <param name="decryptor">The decryptor handle.</param>
+            <param name="passthroughMode">
+                <see langword="true"/> to enable passthrough; <see langword="false"/> to decrypt.
+            </param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.DecryptorDecrypt(System.UIntPtr,Discord.LibDave.Binding.MediaType,System.Byte*,System.IntPtr,System.Byte*,System.IntPtr,System.IntPtr*)">
+            <summary>
+                Decrypts an encrypted media frame.
+            </summary>
+            <param name="decryptor">The decryptor handle.</param>
+            <param name="mediaType">The media type (audio or video).</param>
+            <param name="encryptedFrame">The pointer to the encrypted frame data.</param>
+            <param name="encryptedFrameLength">The length of the encrypted frame.</param>
+            <param name="frame">Pointer to the output buffer the decrypted frame will be written to.</param>
+            <param name="frameCapacity">The capacity of the output buffer.</param>
+            <param name="bytesWritten">The number of bytes written to the output buffer.</param>
+            <returns>The result code indicating success or failure.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.DecryptorGetMaxPlaintextByteSize(System.UIntPtr,Discord.LibDave.Binding.MediaType,System.IntPtr)">
+            <summary>
+                Calculates the maximum plaintext size for a given ciphertext frame size.
+            </summary>
+            <param name="decryptor">The decryptor handle.</param>
+            <param name="mediaType">The media type (audio or video).</param>
+            <param name="encryptedFrameSize">The size of encrypted frame in bytes.</param>
+            <returns>The maximum possible plaintext size in bytes.</returns>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.DecryptorGetStats(System.UIntPtr,Discord.LibDave.Binding.MediaType,Discord.LibDave.Binding.DecryptorStats*)">
+            <summary>
+                Gets decryption statistics.
+            </summary>
+            <param name="decryptor">The decryptor handle.</param>
+            <param name="mediaType">The media type (audio or video).</param>
+            <param name="stats">Pointer to the stats structure to be filled</param>
+        </member>
+        <member name="M:Discord.LibDave.Binding.libdave.SetLogSinkCallback()">
+            <summary>
+                Sets a global callback for receiving log messages from the library.
+            </summary>
+            <param name="callback">The log sink callback function.</param>
+        </member>
+        <member name="T:Discord.LibDave.Utils">
+            <summary>
+                A class containing utilities related to <c>libdave</c>.
+            </summary>
+        </member>
+        <member name="F:Discord.LibDave.Utils.SnowflakeMaxCStringLength">
+            <summary>
+                The max size in bytes of a c-string for a snowflake identifier.
+            </summary>
+        </member>
+        <member name="M:Discord.LibDave.Utils.ToCString(System.UInt64,System.ReadOnlySpan{System.Byte}@)">
+            <summary>
+                Converts a snowflake to a C string.
+            </summary>
+            <param name="id">The snowflake to convert.</param>
+            <param name="str">The span containing the C string of the snowflake.</param>
+            <returns>A handle used to free the C string.</returns>
+            <exception cref="T:System.InvalidOperationException">The ID couldn't be formatted.</exception>
+        </member>
+        <member name="M:Discord.LibDave.Utils.GetIds(System.Collections.Generic.ICollection{System.UInt64})">
+            <summary>
+                Converts a collection of snowflake identifiers into the C-ABI format used by <c>libdave</c>.
+            </summary>
+            <param name="ids">The ids to convert.</param>
+            <returns>The converted ids.</returns>
+        </member>
+    </members>
+</doc>

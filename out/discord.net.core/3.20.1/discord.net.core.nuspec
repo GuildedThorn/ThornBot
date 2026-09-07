@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Discord.Net.Core</id>
+    <version>3.20.1</version>
+    <authors>Discord.Net Contributors</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>PackageLogo.png</icon>
+    <readme>NUGET_README.md</readme>
+    <projectUrl>https://github.com/Discord-Net/Discord.Net</projectUrl>
+    <description>The core components for the Discord.Net library.</description>
+    <tags>discord discordapp</tags>
+    <repository type="git" url="git://github.com/Discord-Net/Discord.Net" commit="f63bed073b08f25a856bed4a003849f7e600a405" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Newtonsoft.Json" version="13.0.4" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Newtonsoft.Json" version="13.0.4" exclude="Build,Analyzers" />
+        <dependency id="System.Linq.AsyncEnumerable" version="10.0.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net9.0">
+        <dependency id="Newtonsoft.Json" version="13.0.4" exclude="Build,Analyzers" />
+        <dependency id="System.Linq.AsyncEnumerable" version="10.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

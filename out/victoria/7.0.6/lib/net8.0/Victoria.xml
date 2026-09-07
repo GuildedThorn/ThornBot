@@ -1,0 +1,1889 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Victoria</name>
+    </assembly>
+    <members>
+        <member name="T:Victoria.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.Version">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.Hostname">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.Port">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.IsSecure">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.EnableResume">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.ResumeKey">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.ResumeTimeout">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.Authorization">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.SelfDeaf">
+            <summary>
+                Whether to enable self deaf for bot.
+            </summary>
+        </member>
+        <member name="P:Victoria.Configuration.SocketConfiguration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Enums.ExceptionSeverity">
+            <summary>
+            severity of the exception
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.ExceptionSeverity.COMMON">
+            <summary>
+            Cause is known and expected, indicates that there is nothing wrong with the library itself
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.ExceptionSeverity.SUSPICIOUS">
+            <summary>
+            Cause might not be exactly known, but is possibly caused by outside factors.
+            For example when an outside service responds in a format that we do not expect
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.ExceptionSeverity.FATAL">
+            <summary>
+            If the probable cause is an issue with the library or when there is no way to tell what the cause might be.
+            This is the default level and other levels are used in cases where the thrower has more in-depth knowledge about the error
+            </summary>
+        </member>
+        <member name="T:Victoria.Enums.TrackEndReason">
+            <summary>
+                Specifies the reason for why the track ended.
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.TrackEndReason.Finished">
+            <summary>
+                This means that the track itself emitted a terminator. This is usually caused by the track reaching the end,
+                however it will also be used when it ends due to an exception.
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.TrackEndReason.Load_Failed">
+            <summary>
+                This means that the track failed to start, throwing an exception before providing any audio.
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.TrackEndReason.Stopped">
+            <summary>
+                The track was stopped due to the player being stopped by either calling
+                <see cref="!:LavaPlayer.StopAsync" /> or <see cref="!:LavaPlayer.PlayAsync" />.
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.TrackEndReason.Replaced">
+            <summary>
+                The track stopped playing because a new track started playing. Note that with this reason, the old track will still
+                play until either its buffer runs out or audio from the new track is available.
+            </summary>
+        </member>
+        <member name="F:Victoria.Enums.TrackEndReason.Cleanup">
+            <summary>
+                The track was stopped because the cleanup threshold for the audio player was reached. This triggers when the amount
+                of time passed since the last call to AudioPlayer#provide() has reached the threshold specified in player manager
+                configuration. This may also indicate either a leaked audio player which was discarded, but not stopped.
+            </summary>
+        </member>
+        <member name="T:Victoria.Extensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.Extensions.ReadAsJsonAsync``1(System.Net.Http.HttpClient,System.Net.Http.HttpRequestMessage)">
+            <summary>
+            
+            </summary>
+            <param name="httpClient"></param>
+            <param name="requestMessage"></param>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.NullReferenceException"></exception>
+            <exception cref="T:System.Net.Http.HttpRequestException"></exception>
+        </member>
+        <member name="M:Victoria.Extensions.AddLavaNode``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Victoria.Configuration})">
+            <summary>
+            
+            </summary>
+            <param name="serviceCollection"></param>
+            <param name="configuration"></param>
+            <typeparam name="TLavaNode"></typeparam>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.Extensions.AddLavaNode(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Victoria.Configuration})">
+            <summary>
+            
+            </summary>
+            <param name="serviceCollection"></param>
+            <param name="configuration"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.Extensions.UseLavaNodeAsync``3(System.IServiceProvider)">
+            <summary>
+            
+            </summary>
+            <param name="serviceProvider"></param>
+            <typeparam name="TLavaNode"></typeparam>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+            <returns></returns>
+            <exception cref="T:System.NullReferenceException"></exception>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:Victoria.Extensions.UseLavaNodeAsync(System.IServiceProvider)">
+            <summary>
+            
+            </summary>
+            <param name="serviceProvider"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Victoria.LavaNode">
+            <inheritdoc />
+        </member>
+        <member name="M:Victoria.LavaNode.#ctor(Discord.WebSocket.DiscordSocketClient,Victoria.Configuration,Microsoft.Extensions.Logging.ILogger{Victoria.LavaNode{Victoria.LavaPlayer{Victoria.LavaTrack},Victoria.LavaTrack}})">
+            <inheritdoc />
+        </member>
+        <member name="M:Victoria.LavaNode.#ctor(Discord.WebSocket.DiscordShardedClient,Victoria.Configuration,Microsoft.Extensions.Logging.ILogger{Victoria.LavaNode{Victoria.LavaPlayer{Victoria.LavaTrack},Victoria.LavaTrack}})">
+            <inheritdoc />
+        </member>
+        <member name="T:Victoria.LavaNode`2">
+            <inheritdoc />
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnReady">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnStats">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnPlayerUpdate">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnTrackStart">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnTrackEnd">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnTrackException">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnTrackStuck">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.LavaNode`2.OnWebSocketClosed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaNode`2.SessionId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaNode`2.IsConnected">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaNode`2.#ctor(Discord.WebSocket.DiscordSocketClient,Victoria.Configuration,Microsoft.Extensions.Logging.ILogger{Victoria.LavaNode{`0,`1}})">
+            <summary>
+            
+            </summary>
+            <param name="discordSocketClient"></param>
+            <param name="configuration"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Victoria.LavaNode`2.#ctor(Discord.WebSocket.DiscordShardedClient,Victoria.Configuration,Microsoft.Extensions.Logging.ILogger{Victoria.LavaNode{`0,`1}})">
+            <summary>
+            
+            </summary>
+            <param name="discordShardedClient"></param>
+            <param name="configuration"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Victoria.LavaNode`2.ConnectAsync">
+            <summary>
+                Starts a WebSocket connection to the specified <see cref="P:Victoria.Configuration.Hostname" />:<see cref="P:Victoria.Configuration.Port" />
+                and hooks into <see cref="T:Discord.WebSocket.BaseSocketClient" /> events.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Throws if client is already connected.</exception>
+        </member>
+        <member name="M:Victoria.LavaNode`2.DisconnectAsync">
+            <summary>
+                Disposes all players and closes websocket connection.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Throws if client isn't connected.</exception>
+        </member>
+        <member name="M:Victoria.LavaNode`2.JoinAsync(Discord.IVoiceChannel)">
+            <summary>
+            
+            </summary>
+            <param name="voiceChannel"></param>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Victoria.LavaNode`2.LeaveAsync(Discord.IVoiceChannel)">
+            <summary>
+                Leaves the specified channel only if <typeparamref name="TLavaPlayer" /> is connected to it.
+            </summary>
+            <param name="voiceChannel">An instance of <see cref="T:Discord.IVoiceChannel" />.</param>
+            <exception cref="T:System.InvalidOperationException">Throws if client isn't connected.</exception>
+        </member>
+        <member name="M:Victoria.LavaNode`2.GetPlayersAsync">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.GetPlayerAsync(System.UInt64)">
+            <summary>
+            
+            </summary>
+            <param name="guildId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.UpdatePlayerAsync(System.UInt64,System.Boolean,Victoria.Rest.Payloads.UpdatePlayerPayload)">
+            <summary>
+            
+            </summary>
+            <param name="guildId"></param>
+            <param name="replaceTrack"></param>
+            <param name="updatePayload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.DestroyPlayerAsync(System.UInt64)">
+            <summary>
+            
+            </summary>
+            <param name="guildId"></param>
+        </member>
+        <member name="M:Victoria.LavaNode`2.UpdateSessionAsync(Victoria.Rest.Payloads.UpdateSessionPayload)">
+            <summary>
+            
+            </summary>
+            <param name="sessionPayload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.LoadTrackAsync(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="identifier"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.DecodeTrackAsync(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="trackHash"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.DecodeTracksAsync(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="tracksHashes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.GetLavalinkInfoAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaNode`2.GetLavalinkStatsAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaNode`2.GetLavalinkVersionAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaNode`2.GetRoutePlannerStatusAsync">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaNode`2.UnmarkFailedAddressAsync(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="address"></param>
+        </member>
+        <member name="M:Victoria.LavaNode`2.UnmarkAllFailedAddressAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaNode`2.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:Victoria.LavaNodeExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaNodeExtensions.TryGetPlayerAsync``2(Victoria.LavaNode{``0,``1},System.UInt64)">
+            <summary>
+            
+            </summary>
+            <param name="lavaNode"></param>
+            <param name="guildId"></param>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:Victoria.LavaPlayer">
+            <inheritdoc />
+        </member>
+        <member name="T:Victoria.LavaPlayer`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="TLavaTrack"></typeparam>
+        </member>
+        <member name="P:Victoria.LavaPlayer`1.GuildId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaPlayer`1.Track">
+            <summary>
+            
+            </summary>
+            TODO: API doesn't return it this way
+        </member>
+        <member name="P:Victoria.LavaPlayer`1.Volume">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaPlayer`1.IsPaused">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaPlayer`1.Filters">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaPlayer`1.VoiceState">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaPlayer`1.State">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.LavaPlayerExtensions">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.GetQueue(Victoria.LavaPlayer{Victoria.LavaTrack})">
+            <summary>
+            
+            </summary>
+            <param name="player"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.PlayAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},``1,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="lavaPlayer"></param>
+            <param name="lavaNode"></param>
+            <param name="lavaTrack"></param>
+            <param name="noReplace"></param>
+            <param name="volume"></param>
+            <param name="shouldPause"></param>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.PlayAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},``1,System.TimeSpan,System.TimeSpan,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="lavaPlayer"></param>
+            <param name="lavaNode"></param>
+            <param name="lavaTrack"></param>
+            <param name="startTime"></param>
+            <param name="stopTime"></param>
+            <param name="noReplace"></param>
+            <param name="volume"></param>
+            <param name="shouldPause"></param>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.StopAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},``1,System.Boolean,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.PauseAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1})">
+            <summary>
+            
+            </summary>
+            <param name="lavaPlayer"></param>
+            <param name="lavaNode"></param>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.ResumeAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},``1)">
+            <summary>
+            
+            </summary>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+            <param name="lavaPlayer"></param>
+            <param name="lavaNode"></param>
+            <param name="lavaTrack"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.SkipAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},System.Nullable{System.TimeSpan})">
+            <summary>
+            
+            </summary>
+            <param name="lavaNode"></param>
+            <param name="skipAfter"></param>
+            <param name="lavaPlayer"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.SeekAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},System.TimeSpan)">
+            <summary>
+            
+            </summary>
+            <param name="lavaPlayer"></param>
+            <param name="lavaNode"></param>
+            <param name="seekPosition"></param>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.SetVolumeAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="lavaPlayer"></param>
+            <param name="lavaNode"></param>
+            <param name="volume"></param>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+        </member>
+        <member name="M:Victoria.LavaPlayerExtensions.EqualizeAsync``2(Victoria.LavaPlayer{``1},Victoria.LavaNode{``0,``1},Victoria.Rest.Filters.EqualizerBand[])">
+            <summary>
+            
+            </summary>
+            <param name="lavaPlayer"></param>
+            <param name="lavaNode"></param>
+            <param name="equalizerBands"></param>
+            <typeparam name="TLavaPlayer"></typeparam>
+            <typeparam name="TLavaTrack"></typeparam>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:Victoria.LavaQueue`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Victoria.LavaQueue`1.Count">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:Victoria.LavaQueue`1.Enqueue(`0)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.TryDequeue(`0@)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.TryPeek(`0@)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.Remove(`0)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.Clear">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.Shuffle">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.RemoveAt(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:Victoria.LavaQueue`1.RemoveRange(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <param name="count"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="T:Victoria.LavaTrack">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Hash">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Title">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Author">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Url">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Position">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Duration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Length">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.IsSeekable">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.IsLiveStream">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.Artwork">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.ISRC">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.SourceName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.LavaTrack.PluginInfo">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.ChannelMixFilter">
+            <summary>
+            Mixes both channels (left and right), with a configurable factor on how much each channel affects the other.
+            With the defaults, both channels are kept independent from each other.
+            Setting all factors to 0.5 means both channels get the same audio.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.ChannelMixFilter.LeftToLeft">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.ChannelMixFilter.LeftToRight">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.ChannelMixFilter.RightToLeft">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.ChannelMixFilter.RightToRight">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.DistortionFilter">
+            <summary>
+            Distortion effect. It can generate some pretty unique audio effects.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.SinOffset">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.SinScale">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.CosOffset">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.CosScale">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.TanOffset">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.TanScale">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.Offset">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.DistortionFilter.Scale">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.EqualizerBand">
+            <summary>
+                Equalizer band
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.EqualizerBand.Band">
+            <summary>
+                15 bands (0-14) that can be changed.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.EqualizerBand.Gain">
+            <summary>
+                Gain is the multiplier for the given band. The default value is 0. Valid values range from -0.25 to 1.0,
+                where -0.25 means the given band is completely muted, and 0.25 means it is doubled.
+            </summary>
+        </member>
+        <member name="M:Victoria.Rest.Filters.EqualizerBand.#ctor(System.Int32,System.Double)">
+            <summary>
+            </summary>
+            <param name="band"></param>
+            <param name="gain"></param>
+        </member>
+        <member name="M:Victoria.Rest.Filters.EqualizerBand.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Victoria.Rest.Filters.EqualizerBand.Equals(Victoria.Rest.Filters.EqualizerBand)">
+            <inheritdoc />
+        </member>
+        <member name="M:Victoria.Rest.Filters.EqualizerBand.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Victoria.Rest.Filters.EqualizerBand.op_Equality(Victoria.Rest.Filters.EqualizerBand,Victoria.Rest.Filters.EqualizerBand)">
+            <summary>
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.Rest.Filters.EqualizerBand.op_Inequality(Victoria.Rest.Filters.EqualizerBand,Victoria.Rest.Filters.EqualizerBand)">
+            <summary>
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Victoria.Rest.Filters.Filters">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Volume">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Bands">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Karoke">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Timescale">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Tremolo">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Vibrato">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Rotation">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.Distortion">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.ChannelMix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.Filters.LowPass">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.IFilter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.KarokeFilter">
+            <summary>
+            Uses equalization to eliminate part of a band, usually targeting vocals.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.KarokeFilter.Level">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.KarokeFilter.MonoLevel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.KarokeFilter.FilterBand">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.KarokeFilter.FilterWidth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.LowPassFilter">
+            <summary>
+            Higher frequencies get suppressed, while lower frequencies pass through this filter, thus the name low pass.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.LowPassFilter.Smoothing">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.RotationFilter">
+            <summary>
+            Rotates the sound around the stereo channels/user headphones aka Audio Panning.
+            It can produce an effect similar to: https://youtu.be/QB9EB8mTKcc (without the reverb)
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.RotationFilter.Hertz">
+            <summary>
+            The frequency of the audio rotating around the listener in Hz. 0.2 is similar to the example video above.
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.TimescaleFilter">
+            <summary>
+            Changes the speed, pitch, and rate. All default to 1.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.TimescaleFilter.Speed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.TimescaleFilter.Pitch">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.TimescaleFilter.Rate">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.TremoloFilter">
+            <summary>
+            Uses amplification to create a shuddering effect, where the volume quickly oscillates.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.TremoloFilter.Frequency">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.TremoloFilter.Depth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Filters.VibratoFilter">
+            <summary>
+            Similar to tremolo. While tremolo oscillates the volume, vibrato oscillates the pitch.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.VibratoFilter.Frequency">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Filters.VibratoFilter.Depth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Lavalink.LavalinkGit">
+            <summary>
+            
+            </summary>
+            <param name="Branch"></param>
+            <param name="Commit"></param>
+            <param name="CommitTime"></param>
+        </member>
+        <member name="M:Victoria.Rest.Lavalink.LavalinkGit.#ctor(System.String,System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="Branch"></param>
+            <param name="Commit"></param>
+            <param name="CommitTime"></param>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkGit.Branch">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkGit.Commit">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkGit.CommitTime">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Lavalink.LavalinkInfo">
+            <summary>
+            
+            </summary>
+            <param name="Version"></param>
+            <param name="BuildTime"></param>
+            <param name="Git"></param>
+            <param name="JavaVirtualMachine"></param>
+            <param name="LavaplayerVersion"></param>
+            <param name="SourceManagers"></param>
+            <param name="Filters"></param>
+            <param name="Plugins"></param>
+        </member>
+        <member name="M:Victoria.Rest.Lavalink.LavalinkInfo.#ctor(Victoria.Rest.Lavalink.LavalinkVersion,System.Int32,Victoria.Rest.Lavalink.LavalinkGit,System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{Victoria.Rest.Filters.Filters},System.Collections.Generic.IEnumerable{Victoria.Rest.Lavalink.LavalinkPlugin})">
+            <summary>
+            
+            </summary>
+            <param name="Version"></param>
+            <param name="BuildTime"></param>
+            <param name="Git"></param>
+            <param name="JavaVirtualMachine"></param>
+            <param name="LavaplayerVersion"></param>
+            <param name="SourceManagers"></param>
+            <param name="Filters"></param>
+            <param name="Plugins"></param>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.Version">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.BuildTime">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.Git">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.JavaVirtualMachine">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.LavaplayerVersion">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.SourceManagers">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.Filters">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkInfo.Plugins">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Lavalink.LavalinkPlugin">
+            <summary>
+            
+            </summary>
+            <param name="Name"></param>
+            <param name="Version"></param>
+        </member>
+        <member name="M:Victoria.Rest.Lavalink.LavalinkPlugin.#ctor(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="Name"></param>
+            <param name="Version"></param>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkPlugin.Name">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkPlugin.Version">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Lavalink.LavalinkVersion">
+            <summary>
+            
+            </summary>
+            <param name="SemVersion"></param>
+            <param name="Major"></param>
+            <param name="Minor"></param>
+            <param name="Patch"></param>
+            <param name="PreRelease"></param>
+        </member>
+        <member name="M:Victoria.Rest.Lavalink.LavalinkVersion.#ctor(System.String,System.Int32,System.Int32,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="SemVersion"></param>
+            <param name="Major"></param>
+            <param name="Minor"></param>
+            <param name="Patch"></param>
+            <param name="PreRelease"></param>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkVersion.SemVersion">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkVersion.Major">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkVersion.Minor">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkVersion.Patch">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Lavalink.LavalinkVersion.PreRelease">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Payloads.UpdatePlayerPayload">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.Rest.Payloads.UpdatePlayerPayload.#ctor(System.String,System.String,System.Int32,System.Int32,System.Int32,System.Boolean,Victoria.Rest.Filters.Filters,Victoria.Rest.VoiceState)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Payloads.UpdateSessionPayload">
+            <summary>
+            
+            </summary>
+            <param name="ShouldResume"></param>
+            <param name="Timeout"></param>
+        </member>
+        <member name="M:Victoria.Rest.Payloads.UpdateSessionPayload.#ctor(System.Boolean,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="ShouldResume"></param>
+            <param name="Timeout"></param>
+        </member>
+        <member name="P:Victoria.Rest.Payloads.UpdateSessionPayload.ShouldResume">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Payloads.UpdateSessionPayload.Timeout">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.PlayerState">
+            <summary>
+            
+            </summary>
+            <param name="Time"></param>
+            <param name="Position"></param>
+            <param name="IsConnected"></param>
+            <param name="Ping"></param>
+        </member>
+        <member name="M:Victoria.Rest.PlayerState.#ctor(System.TimeSpan,System.TimeSpan,System.Boolean,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="Time"></param>
+            <param name="Position"></param>
+            <param name="IsConnected"></param>
+            <param name="Ping"></param>
+        </member>
+        <member name="P:Victoria.Rest.PlayerState.Time">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.PlayerState.Position">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.PlayerState.IsConnected">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.PlayerState.Ping">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.RestException">
+            <summary>
+            When Lavalink encounters an error, it will respond with a JSON object containing more information about the error.
+            Include the trace=true query param to also receive the full stack trace.
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.RestException.Timestamp">
+            <summary>
+            The timestamp of the error in milliseconds since the epoch
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.RestException.Status">
+            <summary>
+            The HTTP status code
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.RestException.Error">
+            <summary>
+            The HTTP status code message
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.RestException.Trace">
+            <summary>
+            The stack trace of the error when trace=true as query param has been sent
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.RestException.Message">
+            <summary>
+            Error message
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.RestException.Path">
+            <summary>
+            The request path
+            </summary>
+        </member>
+        <member name="M:Victoria.Rest.RestException.#ctor(System.IO.Stream)">
+            <summary>
+            
+            </summary>
+            <param name="stream"></param>
+        </member>
+        <member name="M:Victoria.Rest.RestException.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Victoria.Rest.RestException.ThrowIfNot200(System.Boolean,System.IO.Stream)">
+            <summary>
+            
+            </summary>
+            <param name="isSuccessStatusCode"></param>
+            <param name="stream"></param>
+            <exception cref="T:Victoria.Rest.RestException"></exception>
+        </member>
+        <member name="T:Victoria.Rest.Route.RouteDetail">
+            <summary>
+            
+            </summary>
+            <param name="IPBlock"></param>
+            <param name="FailingAddresses"></param>
+            <param name="RotateIndex"></param>
+            <param name="IPIndex"></param>
+            <param name="CurrentAddress"></param>
+            <param name="CurrentAddressIndex"></param>
+            <param name="BlockIndex"></param>
+        </member>
+        <member name="M:Victoria.Rest.Route.RouteDetail.#ctor(Victoria.Rest.Route.RouteIPBlock,System.Collections.Generic.ICollection{Victoria.Rest.Route.RouteFailingAddress},System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="IPBlock"></param>
+            <param name="FailingAddresses"></param>
+            <param name="RotateIndex"></param>
+            <param name="IPIndex"></param>
+            <param name="CurrentAddress"></param>
+            <param name="CurrentAddressIndex"></param>
+            <param name="BlockIndex"></param>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteDetail.IPBlock">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteDetail.FailingAddresses">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteDetail.RotateIndex">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteDetail.IPIndex">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteDetail.CurrentAddress">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteDetail.CurrentAddressIndex">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteDetail.BlockIndex">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Route.RouteFailingAddress">
+            <summary>
+            
+            </summary>
+            <param name="FailingAddress"></param>
+            <param name="FailingTimestamp"></param>
+            <param name="FailingTime"></param>
+        </member>
+        <member name="M:Victoria.Rest.Route.RouteFailingAddress.#ctor(System.String,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="FailingAddress"></param>
+            <param name="FailingTimestamp"></param>
+            <param name="FailingTime"></param>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteFailingAddress.FailingAddress">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteFailingAddress.FailingTimestamp">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteFailingAddress.FailingTime">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Route.RouteIPBlock">
+            <summary>
+            
+            </summary>
+            <param name="BlockType"></param>
+            <param name="Size"></param>
+        </member>
+        <member name="M:Victoria.Rest.Route.RouteIPBlock.#ctor(Victoria.Rest.Route.RouteIPBlockType,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="BlockType"></param>
+            <param name="Size"></param>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteIPBlock.BlockType">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteIPBlock.Size">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Route.RouteIPBlockType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Route.RouteIPBlockType.Inet4Address">
+            <summary>
+            The ipv4 block type
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Route.RouteIPBlockType.Inet6Address">
+            <summary>
+            The ipv6 block type
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Route.RoutePlannerType">
+            <summary>
+            RoutePlanner implementation being used by this server
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Route.RoutePlannerType.RotatingIpRoutePlanner">
+            <summary>
+            IP address used is switched on ban. Recommended for IPv4 blocks or IPv6 blocks smaller than a /64.
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Route.RoutePlannerType.NanoIpRoutePlanner">
+            <summary>
+            IP address used is switched on clock update. Use with at least 1 /64 IPv6 block.
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Route.RoutePlannerType.RotatingNanoIpRoutePlanner">
+            <summary>
+            IP address used is switched on clock update, rotates to a different /64 block on ban.
+            Use with at least 2x /64 IPv6 blocks.
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Route.RoutePlannerType.BalancingIpRoutePlanner">
+            <summary>
+            IP address used is selected at random per request. Recommended for larger IP blocks.
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Route.RouteStatus">
+            <summary>
+            
+            </summary>
+            <param name="PlannerType"></param>
+            <param name="Detail"></param>
+        </member>
+        <member name="M:Victoria.Rest.Route.RouteStatus.#ctor(Victoria.Rest.Route.RoutePlannerType,Victoria.Rest.Route.RouteDetail)">
+            <summary>
+            
+            </summary>
+            <param name="PlannerType"></param>
+            <param name="Detail"></param>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteStatus.PlannerType">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.Rest.Route.RouteStatus.Detail">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.Rest.Search.SearchException">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchException.Message">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchException.Severity">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchException.Cause">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Search.SearchPlaylist">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchPlaylist.Name">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchPlaylist.SelectedTrack">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Search.SearchResponse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchResponse.Type">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchResponse.Playlist">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchResponse.Exception">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.Rest.Search.SearchResponse.Tracks">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.Search.SearchType">
+            <summary>
+            Search status when searching for songs via Lavalink.
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Search.SearchType.Track">
+            <summary>
+            A track has been loaded
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Search.SearchType.Playlist">
+            <summary>
+            A playlist has been loaded
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Search.SearchType.Search">
+            <summary>
+            A search result has been loaded
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Search.SearchType.Empty">
+            <summary>
+            There has been no matches for your identifier
+            </summary>
+        </member>
+        <member name="F:Victoria.Rest.Search.SearchType.Error">
+            <summary>
+            Loading has failed with an error
+            </summary>
+        </member>
+        <member name="T:Victoria.Rest.VoiceState">
+            <summary>
+            
+            </summary>
+            <param name="Token">Discord voice token to authenticate with</param>
+            <param name="Endpoint">Discord voice endpoint to connect to</param>
+            <param name="SessionId">Discord voice session id to authenticate with</param>
+            <param name="ChannelId">Discord voice channel id the bot is connecting to</param>
+        </member>
+        <member name="M:Victoria.Rest.VoiceState.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="Token">Discord voice token to authenticate with</param>
+            <param name="Endpoint">Discord voice endpoint to connect to</param>
+            <param name="SessionId">Discord voice session id to authenticate with</param>
+            <param name="ChannelId">Discord voice channel id the bot is connecting to</param>
+        </member>
+        <member name="P:Victoria.Rest.VoiceState.Token">
+            <summary>Discord voice token to authenticate with</summary>
+        </member>
+        <member name="P:Victoria.Rest.VoiceState.Endpoint">
+            <summary>Discord voice endpoint to connect to</summary>
+        </member>
+        <member name="P:Victoria.Rest.VoiceState.SessionId">
+            <summary>Discord voice session id to authenticate with</summary>
+        </member>
+        <member name="P:Victoria.Rest.VoiceState.ChannelId">
+            <summary>Discord voice channel id the bot is connecting to</summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.PlayerUpdateEventArg">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.PlayerUpdateEventArg.GuildId">
+            <summary>
+            Guild id of the player
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.PlayerUpdateEventArg.Time">
+            <summary>
+            Unix timestamp in milliseconds
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.PlayerUpdateEventArg.Position">
+            <summary>
+            The position of the track in milliseconds
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.PlayerUpdateEventArg.IsConnected">
+            <summary>
+            Returns true when connected to voice gateway
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.PlayerUpdateEventArg.Ping">
+            <summary>
+            Milliseconds between heartbeat and ack
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.ReadyEventArg">
+            <summary>
+            
+            </summary>
+            <param name="IsResumed"></param>
+            <param name="SessionId"></param>
+        </member>
+        <member name="M:Victoria.WebSocket.EventArgs.ReadyEventArg.#ctor(System.Boolean,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="IsResumed"></param>
+            <param name="SessionId"></param>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.ReadyEventArg.IsResumed">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.ReadyEventArg.SessionId">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.StatsEventArg.PlayingPlayers">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.StatsEventArg.Players">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.StatsEventArg.Uptime">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.StatsEventArg.Memory">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.StatsEventArg.Cpu">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.StatsEventArg.Frames">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.Memory">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Memory.Reservable">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Memory.Used">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Memory.Allocated">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Memory.Free">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.Cpu">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Cpu.Cores">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Cpu.SystemLoad">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Cpu.LavalinkLoad">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.Frames">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Frames.Sent">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Frames.Nulled">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.Frames.Deficit">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.TrackEndEventArg">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackEndEventArg.GuildId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackEndEventArg.Track">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackEndEventArg.Reason">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.TrackExceptionEventArg">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackExceptionEventArg.GuildId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackExceptionEventArg.Track">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackExceptionEventArg.Exception">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.TrackException">
+            <summary>
+            
+            </summary>
+            <param name="Message"></param>
+            <param name="Severity"></param>
+            <param name="Cause"></param>
+        </member>
+        <member name="M:Victoria.WebSocket.EventArgs.TrackException.#ctor(System.String,Victoria.Enums.ExceptionSeverity,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="Message"></param>
+            <param name="Severity"></param>
+            <param name="Cause"></param>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackException.Message">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackException.Severity">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackException.Cause">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.TrackStartEventArg">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackStartEventArg.GuildId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackStartEventArg.Track">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.TrackStuckEventArg">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackStuckEventArg.GuildId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackStuckEventArg.Track">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.TrackStuckEventArg.Threshold">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.EventArgs.WebSocketClosedEventArg">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.WebSocketClosedEventArg.GuildId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.WebSocketClosedEventArg.Code">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.WebSocketClosedEventArg.Reason">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.EventArgs.WebSocketClosedEventArg.ByRemote">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.Internal.EventArgs.CloseEventArgs">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.Internal.EventArgs.DataEventArgs">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.EventArgs.DataEventArgs.#ctor(System.Byte[])">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.Internal.EventArgs.ErrorEventArgs">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.EventArgs.ErrorEventArgs.#ctor(System.Exception,System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Victoria.WebSocket.Internal.EventArgs.RetryEventArgs">
+            <summary>
+            
+            </summary>
+            <param name="Count"></param>
+            <param name="IsLastRetry"></param>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.EventArgs.RetryEventArgs.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="Count"></param>
+            <param name="IsLastRetry"></param>
+        </member>
+        <member name="P:Victoria.WebSocket.Internal.EventArgs.RetryEventArgs.Count">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.WebSocket.Internal.EventArgs.RetryEventArgs.IsLastRetry">
+            <summary></summary>
+        </member>
+        <member name="T:Victoria.WebSocket.Internal.WebSocketClient">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.WebSocket.Internal.WebSocketClient.OnOpenAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.WebSocket.Internal.WebSocketClient.OnCloseAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.WebSocket.Internal.WebSocketClient.OnErrorAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.WebSocket.Internal.WebSocketClient.OnDataAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:Victoria.WebSocket.Internal.WebSocketClient.OnRetryAsync">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.Internal.WebSocketClient.IsConnected">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Victoria.WebSocket.Internal.WebSocketClient.Host">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.WebSocketClient.#ctor(Victoria.Configuration)">
+            <summary>
+            
+            </summary>
+            <param name="configuration"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.WebSocketClient.AddHeader(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.WebSocketClient.ConnectAsync">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.WebSocketClient.DisconnectAsync(System.Net.WebSockets.WebSocketCloseStatus,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="closeStatus"></param>
+            <param name="closeReason"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.WebSocketClient.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:Victoria.WebSocket.Internal.WebSocketConfiguration">
+            <summary>
+            
+            </summary>
+            <param name="BufferSize"></param>
+            <param name="ReconnectAttempts"></param>
+            <param name="ReconnectDelay"></param>
+        </member>
+        <member name="M:Victoria.WebSocket.Internal.WebSocketConfiguration.#ctor(System.UInt16,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="BufferSize"></param>
+            <param name="ReconnectAttempts"></param>
+            <param name="ReconnectDelay"></param>
+        </member>
+        <member name="P:Victoria.WebSocket.Internal.WebSocketConfiguration.BufferSize">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.WebSocket.Internal.WebSocketConfiguration.ReconnectAttempts">
+            <summary></summary>
+        </member>
+        <member name="P:Victoria.WebSocket.Internal.WebSocketConfiguration.ReconnectDelay">
+            <summary></summary>
+        </member>
+    </members>
+</doc>
