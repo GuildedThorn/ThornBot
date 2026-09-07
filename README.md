@@ -15,6 +15,10 @@ notifications piped over RabbitMQ.
   connection per guild.
 - **Guestbook notifications** — consumes the `guestbook_messages` RabbitMQ queue that
   GuildedThorn.com publishes to, and posts new guestbook entries to a configured channel.
+- **Moderation** — kick/ban/unban/timeout/purge/warn/lock/unlock/slowmode/mute, with
+  Discord role-hierarchy enforcement (can't act on yourself, the owner, or anyone at/above
+  your role) and a full audit log. Optional automated spam detection (message + mention
+  spam) that auto-timeouts offenders.
 - **Uptime Kuma push** — periodically pings a configured push URL for uptime monitoring.
 
 ## Slash commands
@@ -30,6 +34,18 @@ notifications piped over RabbitMQ.
 | `/radio` | Show whether the radio is live and what's playing |
 | `/songrequest <song>` | Log a song request to a configured channel |
 | `/info` | Bot stats (uptime, guild/user counts, ping, version) |
+| `/kick <user>` | Kick a member (needs KickMembers) |
+| `/ban <user>` | Ban a member (needs BanMembers) |
+| `/unban <user_id>` | Remove a ban |
+| `/timeout <user> <minutes>` | Timeout a member up to 7 days (needs ModerateMembers) |
+| `/untimeout <user>` | Remove a timeout |
+| `/purge <count> [user]` | Bulk-delete messages in the channel (up to 100) |
+| `/warn <user> <reason>` | Issue a persistent warning |
+| `/warns <user>` | Show a member's warnings |
+| `/removewarn <case_id>` | Remove a warning by case ID |
+| `/lock` / `/unlock` | Lock/unlock the current (or given) channel to @everyone |
+| `/slowmode <seconds>` | Set a channel's slowmode (0 disables) |
+| `/mute <user>` / `/unmute <user>` | Mute via an automatically-created `Muted` role |
 
 ## Requirements
 
@@ -73,17 +89,39 @@ secrets and per-deployment values are injected in production (see `.env`/`Enviro
 | Section | Key | Purpose |
 |---|---|---|
 | `discord` | `developmentGuildId` | Guild slash commands are registered to |
+| | `ownerId` | Bot owner ID (gates `[RequireOwner]` commands) |
+| | `auditChannelId` | Channel every moderation action is logged to |
 | | `uptimeKumaPushUrl` | Uptime Kuma push monitor URL |
+| | `automodEnable` | `true` to enable automated spam detection |
+| | `automodMaxRepeats` | identical-message spam threshold (default 6/5s) |
+| | `automodMaxMentions` | mention spam threshold (default 5/60s) |
+| | `automodTimeoutMinutes` | auto-timeout duration in minutes (default 10) |
 | | `GuestBookGuildId` / `GuestBookChannelId` | Where new guestbook messages are posted |
 | `radio` | `baseUrl` | GuildedThorn.com base URL (serves `/api/radio/status` and `/api/radio/stream`) |
 | | `notifyChannelId` | Channel for radio online/offline/now-playing messages |
 | | `radioGuildId` / `radioChannelId` | Guild + dedicated voice channel the radio auto-joins |
 | | `songRequestGuildId` / `songRequestChannelId` | Where `/songrequest` logs requests |
-| `lavalink` | `host` / `port` / `authorization` / `selfdeaf` | Lavalink connection settings |
+| `lavalink` | `hostname` / `port` / `authorization` / `selfdeaf` | Lavalink connection settings |
 | | `jarPath` / `javaPath` | Path to `Lavalink.jar` and the `java` binary to run it with |
+| `moderation` | `warnStorePath` | File (relative to working dir) where warnings persist |
 
 `TOKEN` (bot token) and the `RabbitMQ__*` variables are read directly from the
 environment (see `example.env`).
+
+## Security
+
+- **Fail-closed startup** — `SecurityValidator` refuses to start if the Lavalink
+  password is still the default `youshallnotpass` or RabbitMQ is on `guest`/`guest`.
+  Local dev can opt out with `THORNBOT_ALLOW_DEFAULT_SECRETS=1`, but `dev/up.sh`
+  generates fresh random secrets automatically instead.
+- **Lavalink is loopback-only** — `application.yml.example` binds Lavalink to
+  `127.0.0.1` (never `0.0.0.0`), so the audio framework is never reachable off the box.
+- **Permissions are enforced per-call** — every moderation command is gated by a real
+  Discord permission check *and* role-hierarchy enforcement, not just command visibility.
+- **Secrets over sops** — in the Nix deployment, the token, Lavalink password, and
+  RabbitMQ credentials come from a sops-encrypted environment file, never the repo.
+- **Audit trail** — all moderation actions are logged to the audit channel and the
+  journal; the warn store persists to the service state directory.
 
 ## Deployment
 

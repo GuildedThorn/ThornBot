@@ -1,25 +1,30 @@
 {
   "Version": "1.0",
   "discord": {
-    "developmentGuildId": "123456789012345678",
-    "uptimeKumaPushUrl": "https://example.com/your-uptime-kuma-push-url",
-    "GuestBookGuildId": "123456789012345678",
-    "GuestBookChannelId": "1234567890123456789"
+    "developmentGuildId": "887516061266755585",
+    "ownerId": "",
+    "auditChannelId": "",
+    "uptimeKumaPushUrl": "",
+    "GuestBookGuildId": "",
+    "GuestBookChannelId": ""
   },
   "radio": {
     "baseUrl": "https://guildedthorn.com",
-    "notifyChannelId": "123456789012345678",
-    "radioGuildId": "123456789012345678",
-    "radioChannelId": "123456789012345678",
-    "songRequestGuildId": "123456789012345678",
-    "songRequestChannelId": "123456789012345678"
+    "notifyChannelId": "",
+    "radioGuildId": "",
+    "radioChannelId": "",
+    "songRequestGuildId": "",
+    "songRequestChannelId": ""
   },
   "lavalink": {
-    "host": "localhost",
+    "hostname": "localhost",
     "port": 2333,
     "authorization": "youshallnotpass",
     "selfdeaf": true,
     "jarPath": "Lavalink.jar",
     "javaPath": "java"
+  },
+  "moderation": {
+    "warnStorePath": "warns.json"
   }
 }

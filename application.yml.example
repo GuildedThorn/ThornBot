@@ -1,10 +1,17 @@
 server:
   port: 2333
-  address: 0.0.0.0
+  # Loopback only: ThornBot spawns Lavalink as a local child process and
+  # connects to it via localhost. Binding to 0.0.0.0 would expose the audio
+  # framework (with its password auth) to the whole LAN — never do that.
+  address: 127.0.0.1
 
 lavalink:
   server:
-    password: "youshallnotpass"
+    # Intentionally not a real secret here. dev/up.sh replaces this with a
+    # fresh random password in the copy it writes to application.yml; the Nix
+    # module injects a strong secret via sops. Running with the literal value
+    # below is rejected by ThornBot's SecurityValidator.
+    password: "CHANGE_ME_youshallnotpass"
     sources:
       youtube: true
       bandcamp: true

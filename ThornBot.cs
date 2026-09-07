@@ -38,6 +38,9 @@ public class ThornBot : IAsyncDisposable
             .AddEnvironmentVariables()
             .Build();
 
+        // Fail closed on default/insecure credentials before we even connect.
+        SecurityValidator.Validate(config);
+
         // Configure DI
         _services = ConfigureServices(config);
         _config = _services.GetRequiredService<IConfiguration>();
@@ -49,6 +52,9 @@ public class ThornBot : IAsyncDisposable
 
         // Initialize logging
         _services.GetRequiredService<LoggingService>();
+
+        // Load persisted moderation warnings from disk.
+        _services.GetRequiredService<WarnService>().Load();
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
@@ -128,6 +134,10 @@ public class ThornBot : IAsyncDisposable
                 config["discord:uptimeKumaPushUrl"] ?? throw new InvalidOperationException("Uptime pushUrl not configured.")))
             .AddSingleton<LavaLinkService>()
             .AddSingleton<GuestBookService>()
+            .AddSingleton<AuditLogService>()
+            .AddSingleton<WarnService>(_ => new WarnService(
+                config["moderation:warnStorePath"] ?? Path.Combine(Directory.GetCurrentDirectory(), "warns.json")))
+            .AddSingleton<AutomodService>()
             .AddSingleton<RadioService>(sp => new RadioService(
                 sp.GetRequiredService<DiscordSocketClient>(),
                 config["radio:baseUrl"] ?? throw new InvalidOperationException("Radio baseUrl not configured."),

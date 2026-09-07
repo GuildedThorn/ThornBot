@@ -29,6 +29,11 @@ public class EventsHandler(IServiceProvider serviceProvider) {
             var uptimeService = serviceProvider.GetRequiredService<UptimeService>();
             _ = uptimeService.StartMonitoringAsync();
         });
+
+        StartService("Automod", () => {
+            var automod = serviceProvider.GetRequiredService<AutomodService>();
+            automod.Subscribe();
+        });
     }
 
     private static void StartService(string name, Action start) {

@@ -92,17 +92,25 @@
               default = null;
               description = ''
                 EnvironmentFile with secrets and per-deployment settings (TOKEN,
-                RabbitMQ__Password, Radio__BaseUrl, Radio__RadioGuildId,
-                Radio__RadioChannelId, Radio__NotifyChannelId,
-                Discord__DevelopmentGuildId, Discord__GuestbookGuildId,
-                Discord__GuestbookChannelId, ...). Use sops-nix or agenix to
-                provision it. Values here override Resources/config.json via
-                the standard __ hierarchical env-var binding.
+                Discord__OwnerId, Discord__AuditChannelId, Lavalink__Authorization,
+                RabbitMQ__Password, Radio__BaseUrl, ...). Use sops-nix or agenix to
+                provision it. Values here override Resources/config.json via the
+                standard __ hierarchical env-var binding.
               '';
             };
           };
 
           config = lib.mkIf cfg.enable {
+            # ThornBot is a headless service host; it shouldn't serve anything
+            # inbound except SSH, so lock the firewall to outbound + admin SSH.
+            services.openssh = lib.mkIf (config.services.openssh.enable or false) {
+              openFirewall = false;
+              settings = {
+                PasswordAuthentication = false;
+                KbdInteractiveAuthentication = false;
+              };
+            };
+
             systemd.services.thornbot = {
               description = "ThornBot Discord bot";
               wantedBy = [ "multi-user.target" ];
@@ -110,7 +118,9 @@
               after = [ "network-online.target" ];
 
               # Lavalink__* aren't secrets — always point at the store paths Nix
-              # built, regardless of what's in environmentFile.
+              # built, regardless of what's in environmentFile. The authorization
+              # password comes from the environmentFile (Lavalink__Authorization)
+              # and is also used to bootstrap application.yml below.
               environment = {
                 Lavalink__JarPath = "${cfg.lavalinkPackage}";
                 Lavalink__JavaPath = "${cfg.javaPackage}/bin/java";
@@ -120,10 +130,16 @@
               # (see Services/LavaLinkService.cs), which is this service's
               # WorkingDirectory — bootstrap it once from the repo's template so
               # Lavalink doesn't fall back to Spring Boot's bare default (port
-              # 8080, no password). Never overwritten, so operator edits stick.
+              # 8080, no password). The template's placeholder
+              # CHANGE_ME_youshallnotpass is replaced by the real
+              # Lavalink__Authorization from the environment. Never overwritten,
+              # so operator edits stick.
               preStart = ''
                 if [ ! -e "$STATE_DIRECTORY/application.yml" ]; then
-                  cp --no-preserve=mode,ownership ${cfg.package.src}/application.yml.example "$STATE_DIRECTORY/application.yml"
+                  cp --no-preserve=mode,ownership ${self}/application.yml.example "$STATE_DIRECTORY/application.yml"
+                  if [ -n "''${Lavalink__Authorization:-}" ]; then
+                    sed -i "s|CHANGE_ME_youshallnotpass|$Lavalink__Authorization|" "$STATE_DIRECTORY/application.yml"
+                  fi
                 fi
               '';
 
@@ -134,6 +150,25 @@
                 DynamicUser = true;
                 Restart = "on-failure";
                 RestartSec = 5;
+
+                # --- Hardening (all individual knobs above opt-out) ---
+                NoNewPrivileges = true;
+                ProtectSystem = "strict";
+                ProtectHome = true;
+                PrivateTmp = true;
+                PrivateDevices = true;
+                ProtectKernelTunables = true;
+                ProtectKernelModules = true;
+                ProtectControlGroups = true;
+                RestrictSUIDSGID = true;
+                RestrictNamespaces = true;
+                LockPersonality = true;
+                MemoryDenyWriteExecute = true;
+                RestrictRealtime = true;
+                ProtectClock = true;
+                # Clean the incoming HTTP request to the uptime push + radio API.
+                CapabilityBoundingSet = [ ];
+                AmbientCapabilities = [ ];
               }
               // lib.optionalAttrs (cfg.environmentFile != null) {
                 EnvironmentFile = cfg.environmentFile;
